@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialize", "Serialize.csproj", "{5A349E3F-3E0C-491B-84B2-35FC66784B3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Serialize", "Serialize\Serialize.csproj", "{E78E9268-F7C0-4FFB-85B5-BDBC977EC580}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnakeGame", "SnakeGame\SnakeGame.csproj", "{548424B5-93E5-48C1-A129-E8BE1DC9865D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnakeCore", "SnakeCore\SnakeCore.csproj", "{E1FC1885-8FA8-4A44-8663-DE90D66F9A0C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +15,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5A349E3F-3E0C-491B-84B2-35FC66784B3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A349E3F-3E0C-491B-84B2-35FC66784B3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A349E3F-3E0C-491B-84B2-35FC66784B3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A349E3F-3E0C-491B-84B2-35FC66784B3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E78E9268-F7C0-4FFB-85B5-BDBC977EC580}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E78E9268-F7C0-4FFB-85B5-BDBC977EC580}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E78E9268-F7C0-4FFB-85B5-BDBC977EC580}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E78E9268-F7C0-4FFB-85B5-BDBC977EC580}.Release|Any CPU.Build.0 = Release|Any CPU
+		{548424B5-93E5-48C1-A129-E8BE1DC9865D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{548424B5-93E5-48C1-A129-E8BE1DC9865D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{548424B5-93E5-48C1-A129-E8BE1DC9865D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{548424B5-93E5-48C1-A129-E8BE1DC9865D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1FC1885-8FA8-4A44-8663-DE90D66F9A0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1FC1885-8FA8-4A44-8663-DE90D66F9A0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1FC1885-8FA8-4A44-8663-DE90D66F9A0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1FC1885-8FA8-4A44-8663-DE90D66F9A0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
