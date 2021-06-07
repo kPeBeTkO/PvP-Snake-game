@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace SnakeCore.Network.Serializers
 {
-    class VectorSerializer : ICustomSerializer
+    public class VectorSerializer : ICustomSerializer
     {
         public object Deserialize(byte[] data, int start, int size)
         {

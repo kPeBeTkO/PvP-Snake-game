@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnakeCore", "SnakeCore\Snak
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreadWorker", "ThreadWorker\ThreadWorker.csproj", "{5F69F5AF-6235-4307-940D-E6E2D37B7F6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleSnake", "ConsoleSnake\ConsoleSnake.csproj", "{76AF87DD-C538-4DC7-B258-2F119D606BC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleSnake", "ConsoleSnake\ConsoleSnake.csproj", "{76AF87DD-C538-4DC7-B258-2F119D606BC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{82BA9B65-31FB-4D3F-97FB-C2F0F6189742}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{76AF87DD-C538-4DC7-B258-2F119D606BC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76AF87DD-C538-4DC7-B258-2F119D606BC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76AF87DD-C538-4DC7-B258-2F119D606BC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82BA9B65-31FB-4D3F-97FB-C2F0F6189742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82BA9B65-31FB-4D3F-97FB-C2F0F6189742}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82BA9B65-31FB-4D3F-97FB-C2F0F6189742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82BA9B65-31FB-4D3F-97FB-C2F0F6189742}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,5 +11,6 @@ namespace SnakeCore.Network.Dto
         public Vector[] Enemy;
         public ItemDto[] Items;
         public Vector MapSize;
+        public Direction PlayerDirection;
     }
 }
