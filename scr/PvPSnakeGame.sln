@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnakeCore", "SnakeCore\Snak
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreadWorker", "ThreadWorker\ThreadWorker.csproj", "{5F69F5AF-6235-4307-940D-E6E2D37B7F6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleSnake", "ConsoleSnake\ConsoleSnake.csproj", "{76AF87DD-C538-4DC7-B258-2F119D606BC4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleSnake", "ConsoleSnake\ConsoleSnake.csproj", "{76AF87DD-C538-4DC7-B258-2F119D606BC4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

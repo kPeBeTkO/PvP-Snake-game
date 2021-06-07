@@ -1,7 +1,7 @@
 ﻿
 namespace SnakeGame
 {
-    partial class Form1
+    partial class StartForm
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -29,10 +29,19 @@ namespace SnakeGame
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.SuspendLayout();
+            // 
+            // StartForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Form1";
+            this.ClientSize = new System.Drawing.Size(778, 450);
+            this.Name = "StartForm";
+            this.Text = "PvPSnake";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Load += new System.EventHandler(this.Form1_Load);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
