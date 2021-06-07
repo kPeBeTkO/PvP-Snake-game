@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SnakeCore
+namespace SnakeCore.Logic
 {
-    public struct Vector
+    public class Vector
     {
         public readonly int X;
         public readonly int Y;
@@ -33,7 +33,10 @@ namespace SnakeCore
         }
 
         public Vector AddOnRing(Vector vector, Vector ringSize)
-            => new Vector((X + vector.X) % ringSize.X, (Y + vector.Y) % ringSize.Y);
+        {
+            return new Vector((X + vector.X + ringSize.X) % ringSize.X, (Y + vector.Y + ringSize.Y) % ringSize.Y);
+        }
+            
 
         public static Vector AddOnRing(Vector a, Vector b, Vector ringSize)
             => new Vector((a.X + b.X) % ringSize.X, (a.Y + b.Y) % ringSize.Y);
@@ -63,6 +66,11 @@ namespace SnakeCore
         public override int GetHashCode()
         {
             return X * 100000 + Y;
+        }
+
+        public override string ToString()
+        {
+            return X.ToString() + " " + Y.ToString() + " ";
         }
     }
 }
