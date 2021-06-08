@@ -24,16 +24,21 @@ namespace SnakeCore.Logic
                 GenerateItem();
         }
 
-        public void Tick()
+        public bool Tick()
         {
+            var changed = false;
             foreach(var snake in Snakes)
-                snake.Tick();
+                changed = changed || snake.Tick();
             foreach(var item in Items)
-                item.Tick();
+                changed = changed || item.Tick();
             Items.RemoveAll(i => i.TicksToLive == 0);
             while(Items.Count < itemsCount)
+            {
                 GenerateItem();
+                changed = true;
+            }
             CheckAllCollisions();
+            return changed;
         }
 
         public void CheckAllCollisions()

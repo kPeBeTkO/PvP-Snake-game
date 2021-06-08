@@ -29,6 +29,11 @@ namespace SnakeCore.Network
             return mes;
         }
 
+        public void Close()
+        {
+            messaging.Close();
+        }
+
         public bool IsConnected()
         {
             messaging.Send("Hello");
@@ -52,31 +57,41 @@ namespace SnakeCore.Network
             messaging.Send("GameState");
             messaging.Send(gameState);
             var ans = messaging.Recieve<string>();
-            return ans == "Ok";
+            if (ans == "Ok")
+                return true;
+            return false;
         }
 
-        public GameStateDto GetGameState(Direction currentDir)
+        public Result<GameStateDto>GetGameState()
+        {
+            var ans = messaging.TryRecieve<string>();
+            if (ans.Success && ans.Value == "GameState")
+            {
+                var gameState = messaging.Recieve<GameStateDto>();
+                messaging.Send("Ok");
+                return Result.Ok(gameState);
+            }
+            return Result.Fail<GameStateDto>();
+        }
+        
+        public bool SendDirection(Direction currentDir)
         {
             messaging.Send("Direction");
             messaging.Send(currentDir);
             var ans = messaging.Recieve<string>();
-            if (ans == "GameState")
-            {
-                var gameState = messaging.Recieve<GameStateDto>();
-                messaging.Send("Ok");
-                return gameState;
-            }
-            return null;
+            return ans == "Ok";
         }
 
-        public Direction GetPlayerDirection()
+        public Result<Direction> GetPlayerDirection()
         {
-            var ans = messaging.Recieve<string>();
-            if (ans == "Direction")
+            var ans = messaging.TryRecieve<string>();
+            if (ans.Success && ans.Value == "Direction")
             {
-                return  messaging.Recieve<Direction>();
+                var dir =  messaging.Recieve<Direction>();
+                messaging.Send("Ok");
+                return Result.Ok(dir);
             }
-            return Direction.Up;
+            return Result.Fail<Direction>();
         }
     }
 }

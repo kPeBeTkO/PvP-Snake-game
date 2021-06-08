@@ -31,7 +31,7 @@ namespace SnakeCore.Network
 
         public override void Run()
         {
-            var watch = new Stopwatch();
+            /*var watch = new Stopwatch();
             watch.Start();
             long lasttime = 0;
             while(true)
@@ -42,7 +42,7 @@ namespace SnakeCore.Network
                     lasttime = curtime;
                     GameState = messaging.GetGameState(direction);
                 }
-            }
+            }*/
         }
     }
 }
