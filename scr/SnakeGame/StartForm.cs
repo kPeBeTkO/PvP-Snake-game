@@ -80,12 +80,12 @@ namespace SnakeGame
             textures.Add(Texture.HeadDown, headDown);
             textures.Add(Texture.HeadRight, headRight);
             textures.Add(Texture.HeadLeft, headLeft);
-            textures.Add(Texture.BodyHorizintal, bodyHorizintal);
+            textures.Add(Texture.BodyHorizontal, bodyHorizintal);
             textures.Add(Texture.BodyVertical, bodyVertical);
             textures.Add(Texture.AngelDownRight, angelDownRight);
-            textures.Add(Texture.AngelRightUp, angelRightUp);
+            textures.Add(Texture.AngelUpRight, angelRightUp);
             textures.Add(Texture.AngelUpLeft, angelUpLeft);
-            textures.Add(Texture.AngelLeftDown, angelLeftDown);
+            textures.Add(Texture.AngelDownLeft, angelLeftDown);
             textures.Add(Texture.Apple, apple);
             textures.Add(Texture.Boot, boot);
             textures.Add(Texture.Poison, poison);
@@ -128,22 +128,116 @@ namespace SnakeGame
             this.field = field;
         }
 
-        private Bitmap DrawFrame(Dictionary<Texture, Bitmap> textures, Bitmap field, 
-            GameStateDto state, int fieldHeight, int fieldWidth)
+        private Bitmap DrawFrame(Dictionary<Texture, Bitmap> textures, int fieldHeight, int fieldWidth)
         {
             var point = new Point();
+            var prev = new Point();
+            var next = new Point();
             var frame = new Bitmap(field);
-            var g = Graphics.FromImage(field);
-            point = coordinates[state.Player[0].Y, state.Player[0].X];
-            g.DrawImage(textures[Texture.HeadDown], new Rectangle(point.Y, point.X, rectangleSize, rectangleSize));
+            var g = Graphics.FromImage(frame);
+            point = new Point(state.Player[0].X, state.Player[0].Y);
+            prev = new Point (state.Player[0].X, state.Player[0].Y);
+            next = new Point(state.Player[1].X, state.Player[1].Y);
+            var texture = Texture.Apple;
+            if (prev.Y == next.Y && prev.X - 1 == next.X)
+                texture = Texture.HeadRight;
+            else if (prev.Y == next.Y && prev.X + 1 == next.X)
+                texture = Texture.HeadLeft;
+            else if (prev.Y - 1 == next.Y && prev.X == next.X)
+                texture = Texture.HeadDown;
+            else if (prev.Y + 1 == next.Y && prev.X == next.X)
+                texture = Texture.HeadUp;
+            g.DrawImage(textures[texture], new Rectangle(coordinates[point.Y, point.X].Y, coordinates[point.Y, point.X].X, rectangleSize, rectangleSize));
             for (int i = 1; i < state.Player.Length - 1; i++)
             {
-                point = coordinates[state.Player[i].Y, state.Player[i].X];
-                g.DrawImage(textures[Texture.BodyHorizintal], new Rectangle(point.Y, point.X, rectangleSize, rectangleSize));
+                point = next;
+                next = new Point(state.Player[i + 1].X, state.Player[i + 1].Y);
+                if (prev.Y == next.Y)
+                    texture = Texture.BodyHorizontal;
+                else if (prev.X == next.X)
+                    texture = Texture.BodyVertical;
+                else if ((prev.X == next.X + 1 && prev.Y == next.Y - 1 && point.X == prev.X) ||
+                    (prev.X == next.X - 1 && prev.Y == next.Y + 1 && point.Y == prev.Y))
+                    texture = Texture.AngelUpLeft;
+                else if ((prev.X == next.X + 1 && prev.Y == next.Y + 1 && point.Y == prev.Y) ||
+                        (prev.X == next.X - 1 && prev.Y == next.Y - 1 && point.X == prev.X))
+                    texture = Texture.AngelUpRight;
+                else if ((prev.X == next.X - 1 && prev.Y == next.Y - 1 && point.Y == prev.Y) ||
+                    (prev.X == next.X + 1 && prev.Y == next.Y + 1 && point.X == prev.X))
+                    texture = Texture.AngelDownLeft;
+                else
+                    texture = Texture.AngelDownRight;
+                g.DrawImage(textures[texture], new Rectangle(coordinates[point.Y, point.X].Y, coordinates[point.Y, point.X].X, rectangleSize, rectangleSize));
+                prev = point;
             }
-            point = coordinates[state.Player[state.Player.Length - 1].Y, state.Player[state.Player.Length - 1].X];
-            g.DrawImage(textures[Texture.TailUp] , new Rectangle(point.Y, point.X, rectangleSize, rectangleSize));
+            if (prev.Y == next.Y && prev.X - 1 == next.X)
+                texture = Texture.TailRight;
+            else if (prev.Y == next.Y && prev.X + 1 == next.X)
+                texture = Texture.TailLeft;
+            else if (prev.Y - 1 == next.Y && prev.X == next.X)
+                texture = Texture.TailDown;
+            else if (prev.Y + 1 == next.Y && prev.X == next.X)
+                texture = Texture.TailUp;
+            g.DrawImage(textures[texture] , new Rectangle(coordinates[next.Y, next.X].Y, coordinates[next.Y, next.X].X, rectangleSize, rectangleSize));
+            foreach (var item in state.Items)
+            {
+                if (item.Type == "Apple")
+                    texture = Texture.Apple;
+                else if (item.Type == "Boots")
+                    texture = Texture.Boot;
+                else if (item.Type == "Poison")
+                    texture = Texture.Poison;
+                g.DrawImage(textures[texture], new Rectangle(coordinates[item.Location.Y, item.Location.X].Y,
+                        coordinates[item.Location.Y, item.Location.X].X, rectangleSize, rectangleSize));
+            }
             return frame;
+        }
+
+        private GameStateDto GetSnake()
+        {
+            var state = new GameStateDto();
+            var snake = new List<Vector>();
+            var r = new Random();
+            var v = r.Next(3, 10);
+            snake.Add(new Vector(r.Next(20), r.Next(15)));
+            for (int i = 0; i < v; i++)
+            {
+                var dir = (Direction)r.Next(4); 
+                var newP = snake.Last().AddOnRing(Vector.GetVector(dir), new Vector(20, 15));
+                var j = 0;
+                for(j = 0; snake.Contains(newP) && j < 3; j++)
+                {
+                    dir = (Direction)(((int)dir + 1) % 4);
+                    newP = snake.Last().AddOnRing(Vector.GetVector(dir), new Vector(20, 15));
+                }
+                if (j == 3) break;
+                snake.Add(newP);
+            }
+
+            state.Items = new ItemDto[2];
+            for (var i = 0; i < 2; i ++)
+            {
+                var type = "";
+                var n = r.Next(3);
+                switch(n)
+                {
+                    case 1:
+                        type = "Apple";
+                        break;
+                    case 2:
+                        type = "Boots";
+                        break;
+                    case 0:
+                        type = "Poison";
+                        break;
+                }
+                var newP = new Vector(r.Next(20), r.Next(15));
+                while (snake.Contains(newP))
+                    newP = new Vector(r.Next(20), r.Next(15));
+                state.Items[i] = new ItemDto() { Location = newP, Type = type };
+            }
+            state.Player = snake.ToArray();
+            return state;
         }
 
         public StartForm(int fieldHeight, int fieldWidth)
@@ -159,17 +253,14 @@ namespace SnakeGame
                 Font = new Font("impact", 50),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
-                BackColor = Color.FromArgb(0, 100, 100, 100),
-                
+                BackColor = Color.FromArgb(0, 100, 100, 100)
             };
 
             start.FlatAppearance.BorderSize = 0;
-            state.Player = new Vector[] { new Vector(0,0), new Vector(1, 0), new Vector(2, 0), new Vector(2, 1), new Vector(2, 2) };
-            start.Click += (sender, args) =>
+            start.Click += (s, a) =>
             {
                 StartGame(fieldHeight, fieldWidth);
             };
-
             text = new Label()
             {
                 Location = new Point(Width / 2, Height / 4),
@@ -182,28 +273,32 @@ namespace SnakeGame
 
             Brush green = new SolidBrush(Color.FromArgb(48, 155, 82));
             Brush lime = new SolidBrush(Color.FromArgb(92, 188, 90));
-            Bitmap frame;
             Paint += (s, a) =>
             {
                 if (field != null)
                 {
-                    frame = DrawFrame(textures, field, state, fieldHeight, fieldWidth);
+
+                    state = GetSnake();
+
+                    var frame = DrawFrame(textures, fieldHeight, fieldWidth);
                     a.Graphics.DrawImage(frame, new PointF(0,0));
                     Controls.Clear();
                 }
                 else
                 {
                     DrawMenu(a.Graphics, green, lime);
-                    start.Size = new Size(Width / 4, Height / 6);
+                    start.Size = new Size(Width / 4, 3 * Height / 14);
+                    start.Font = new Font("impact", Math.Min(Height / 10, Width / 12));
                     start.Location = new Point(Width / 2 - start.Size.Width / 2, Height / 2 - start.Size.Height / 2);
-                    text.Size = new Size(Width / 2, Height / 6);
+                    text.Size = new Size(Width / 2, Height / 4);
+                    text.Font = new Font("impact", Math.Min(Height / 10, Width / 15));
                     text.Location = new Point(Width / 2 - start.Size.Width / 2, Height / 4 - start.Size.Height / 2);
                     Controls.Add(start);
                     Controls.Add(text);
                 }
             };
             var timer = new Timer();
-            timer.Interval = 100;
+            timer.Interval = 2000;
             timer.Enabled = true;
             timer.Tick += (s, a) => Invalidate();
             timer.Start();

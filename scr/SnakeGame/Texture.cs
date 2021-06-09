@@ -8,7 +8,7 @@ namespace SnakeGame
 {
     enum Texture
     {
-        TailUp, TailDown, TailRight, TailLeft, HeadUp, HeadDown, HeadRight, HeadLeft, BodyHorizintal,
-        BodyVertical, AngelDownRight, AngelRightUp, AngelUpLeft, AngelLeftDown, Apple, Boot, Poison
+        TailUp, TailDown, TailRight, TailLeft, HeadUp, HeadDown, HeadRight, HeadLeft, BodyHorizontal,
+        BodyVertical, AngelDownRight, AngelUpRight, AngelUpLeft, AngelDownLeft, Apple, Boot, Poison
     }
 }
