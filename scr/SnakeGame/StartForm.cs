@@ -14,7 +14,7 @@ namespace SnakeGame
 {
     public partial class StartForm : Form
     {
-        private GameStateDto state = new GameStateDto();
+        protected GameStateDto state = new GameStateDto();
         private Button start;
         private Label text;
         private Point[,] coordinates;
@@ -135,6 +135,8 @@ namespace SnakeGame
             var next = new Point();
             var frame = new Bitmap(field);
             var g = Graphics.FromImage(frame);
+
+
             point = new Point(state.Player[0].X, state.Player[0].Y);
             prev = new Point (state.Player[0].X, state.Player[0].Y);
             next = new Point(state.Player[1].X, state.Player[1].Y);
@@ -178,7 +180,58 @@ namespace SnakeGame
                 texture = Texture.TailDown;
             else if (prev.Y + 1 == next.Y && prev.X == next.X)
                 texture = Texture.TailUp;
+
             g.DrawImage(textures[texture] , new Rectangle(coordinates[next.Y, next.X].Y, coordinates[next.Y, next.X].X, rectangleSize, rectangleSize));
+
+
+
+            point = new Point(state.Enemy[0].X, state.Enemy[0].Y);
+            prev = new Point (state.Enemy[0].X, state.Enemy[0].Y);
+            next = new Point(state.Enemy[1].X, state.Enemy[1].Y);
+            texture = Texture.Apple;
+            if (prev.Y == next.Y && prev.X - 1 == next.X)
+                texture = Texture.HeadRight;
+            else if (prev.Y == next.Y && prev.X + 1 == next.X)
+                texture = Texture.HeadLeft;
+            else if (prev.Y - 1 == next.Y && prev.X == next.X)
+                texture = Texture.HeadDown;
+            else if (prev.Y + 1 == next.Y && prev.X == next.X)
+                texture = Texture.HeadUp;
+            g.DrawImage(textures[texture], new Rectangle(coordinates[point.Y, point.X].Y, coordinates[point.Y, point.X].X, rectangleSize, rectangleSize));
+            for (int i = 1; i < state.Enemy.Length - 1; i++)
+            {
+                point = next;
+                next = new Point(state.Enemy[i + 1].X, state.Enemy[i + 1].Y);
+                if (prev.Y == next.Y)
+                    texture = Texture.BodyHorizontal;
+                else if (prev.X == next.X)
+                    texture = Texture.BodyVertical;
+                else if ((prev.X == next.X + 1 && prev.Y == next.Y - 1 && point.X == prev.X) ||
+                    (prev.X == next.X - 1 && prev.Y == next.Y + 1 && point.Y == prev.Y))
+                    texture = Texture.AngelUpLeft;
+                else if ((prev.X == next.X + 1 && prev.Y == next.Y + 1 && point.Y == prev.Y) ||
+                        (prev.X == next.X - 1 && prev.Y == next.Y - 1 && point.X == prev.X))
+                    texture = Texture.AngelUpRight;
+                else if ((prev.X == next.X - 1 && prev.Y == next.Y - 1 && point.Y == prev.Y) ||
+                    (prev.X == next.X + 1 && prev.Y == next.Y + 1 && point.X == prev.X))
+                    texture = Texture.AngelDownLeft;
+                else
+                    texture = Texture.AngelDownRight;
+                g.DrawImage(textures[texture], new Rectangle(coordinates[point.Y, point.X].Y, coordinates[point.Y, point.X].X, rectangleSize, rectangleSize));
+                prev = point;
+            }
+            if (prev.Y == next.Y && prev.X - 1 == next.X)
+                texture = Texture.TailRight;
+            else if (prev.Y == next.Y && prev.X + 1 == next.X)
+                texture = Texture.TailLeft;
+            else if (prev.Y - 1 == next.Y && prev.X == next.X)
+                texture = Texture.TailDown;
+            else if (prev.Y + 1 == next.Y && prev.X == next.X)
+                texture = Texture.TailUp;
+
+            g.DrawImage(textures[texture] , new Rectangle(coordinates[next.Y, next.X].Y, coordinates[next.Y, next.X].X, rectangleSize, rectangleSize));
+
+
             foreach (var item in state.Items)
             {
                 if (item.Type == "Apple")
@@ -278,7 +331,7 @@ namespace SnakeGame
                 if (field != null)
                 {
 
-                    state = GetSnake();
+                    //state = GetSnake();
 
                     var frame = DrawFrame(textures, fieldHeight, fieldWidth);
                     a.Graphics.DrawImage(frame, new PointF(0,0));
@@ -298,7 +351,7 @@ namespace SnakeGame
                 }
             };
             var timer = new Timer();
-            timer.Interval = 2000;
+            timer.Interval = 50;
             timer.Enabled = true;
             timer.Tick += (s, a) => Invalidate();
             timer.Start();

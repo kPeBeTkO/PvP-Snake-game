@@ -16,7 +16,7 @@ namespace SnakeGame
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new StartForm(15, 20));
+            Application.Run(new OnlineForm(20, 20));
         }
     }
 }

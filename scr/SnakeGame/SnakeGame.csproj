@@ -52,6 +52,9 @@
     <Compile Include="GameForm.Designer.cs">
       <DependentUpon>GameForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="OnlineForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="StartForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -113,6 +116,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Serialize\Serialize.csproj">
+      <Project>{e78e9268-f7c0-4ffb-85b5-bdbc977ec580}</Project>
+      <Name>Serialize</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SnakeCore\SnakeCore.csproj">
       <Project>{e1fc1885-8fa8-4a44-8663-de90d66f9a0c}</Project>
       <Name>SnakeCore</Name>
