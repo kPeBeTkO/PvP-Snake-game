@@ -15,6 +15,7 @@ namespace SnakeCore.Network
         public readonly ThreadDispatcher Dispatcher;
         private volatile bool active = true;
         private Serializer serializer;
+        private LocalConnectionFinder localFinder;
 
         public GameConnectionServer(IPEndPoint addres)
         {
@@ -26,12 +27,14 @@ namespace SnakeCore.Network
             serializer = new Serializer();
             serializer.AddCustom(new VectorSerializer());
             serializer.AddCustom(new DirectionSerializer());
+            localFinder = new LocalConnectionFinder(new Dto.InviteDto("Hi!", addres.Port));
+            Dispatcher.AddInQueue(localFinder);
             Dispatcher.AddInQueue(this);
         }
 
         public override string GetName()
         {
-            return "GameConnectionServer";
+            return "GameConnectionServer" + Server.LocalEndPoint.ToString();
         }
 
         public override void Run()

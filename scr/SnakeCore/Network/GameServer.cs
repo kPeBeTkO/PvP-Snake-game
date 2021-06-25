@@ -19,7 +19,7 @@ namespace SnakeCore.Network
 
         public GameServer(Messaging player1, Messaging player2)
         {
-            var mapSize = new Vector(20, 20);
+            var mapSize = new Vector(15, 10);
             var snake1 = new Snake(new Vector(4, 5), new Vector(0, -1), 3, mapSize);
             var snake2 = new Snake(new Vector(9, 5), new Vector(0, -1), 3, mapSize);
             game = new Game(new Snake[]{ snake1, snake2 }, mapSize);

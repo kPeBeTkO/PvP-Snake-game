@@ -19,6 +19,7 @@ namespace Serialize
         {
             this.handler = handler;
             this.serializer = serializer;
+            handler.NoDelay = true;
         }
 
         public static DataTransferHandler Connect(IPEndPoint addres, Serializer serializer)

@@ -124,6 +124,10 @@
       <Project>{e1fc1885-8fa8-4a44-8663-de90d66f9a0c}</Project>
       <Name>SnakeCore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ThreadWorker\ThreadWorker.csproj">
+      <Project>{5F69F5AF-6235-4307-940D-E6E2D37B7F6C}</Project>
+      <Name>ThreadWorker</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

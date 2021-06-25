@@ -14,7 +14,7 @@ namespace SnakeGame
 {
     public partial class StartForm : Form
     {
-        protected GameStateDto state = new GameStateDto();
+        protected GameStateDto state;
         private Button start;
         private Label text;
         private Point[,] coordinates;
@@ -43,7 +43,7 @@ namespace SnakeGame
             }
         }
 
-        private void CreateAllTextures()
+        protected void CreateAllTextures()
         {
             var tailUp = new Bitmap("Textures\\tail.png");
             var tailDown = new Bitmap("Textures\\tail.png");
@@ -91,13 +91,13 @@ namespace SnakeGame
             textures.Add(Texture.Poison, poison);
         }
 
-        private void StartGame(int fieldHeight, int fieldWidth)
+        protected virtual void StartGame(int fieldHeight, int fieldWidth)
         {
             CreateAllTextures();
             CreateField(fieldHeight, fieldWidth);
         }
 
-        private void CreateField(int fieldHeight, int fieldWidth)
+        protected void CreateField(int fieldHeight, int fieldWidth)
         {
             coordinates = new Point[fieldHeight,fieldWidth];
             var field = new Bitmap(Width, Height);
@@ -130,12 +130,14 @@ namespace SnakeGame
 
         private Bitmap DrawFrame(Dictionary<Texture, Bitmap> textures, int fieldHeight, int fieldWidth)
         {
+            
             var point = new Point();
             var prev = new Point();
             var next = new Point();
             var frame = new Bitmap(field);
             var g = Graphics.FromImage(frame);
-
+            if (state == null)
+                return frame;
 
             point = new Point(state.Player[0].X, state.Player[0].Y);
             prev = new Point (state.Player[0].X, state.Player[0].Y);

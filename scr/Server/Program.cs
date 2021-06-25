@@ -8,8 +8,8 @@ namespace Server
     {
         static void Main(string[] args)
         {
-            //var address = new IPEndPoint(IPAddress.Parse("192.168.0.102"), 9000);
-            var address = new IPEndPoint(IPAddress.Loopback, 9000);
+            var address = new IPEndPoint(IPAddress.Any, 9000);
+            //var address = new IPEndPoint(IPAddress.Loopback, 9000);
             var server = new GameConnectionServer(address);
         }
     }
