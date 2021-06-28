@@ -28,9 +28,6 @@ namespace SnakeGame
         {
             CreateAllTextures();
             CreateField(fieldHeight, fieldWidth);
-            var serializer = new Serializer();
-            serializer.AddCustom(new VectorSerializer());
-            serializer.AddCustom(new DirectionSerializer());
             var invites = new InviteDto[0];
             while(invites.Length < 1)
             {
@@ -39,7 +36,7 @@ namespace SnakeGame
             //var address = new IPEndPoint(IPAddress.Parse("192.168.0.102"), 9000);
             //var address = new IPEndPoint(IPAddress.Loopback, 9000);
             var address = new IPEndPoint(IPAddress.Parse(invites[0].Address), invites[0].Port);
-            server = Messaging.Connect(address, serializer);
+            server = Messaging.Connect(address);
             KeyDown += ChangeDirection;
             (new Thread(Update){ IsBackground = true }).Start();
         }

@@ -12,19 +12,19 @@ namespace SnakeCore.Logic
         public Direction Direction { get; private set; } = Direction.Up;
         public LinkedList<Vector> Body {get; private set;}
         public int TicksPassed {get; private set; } = 0;
-        public double Speed { get; private set; } = 2;
+        public double Speed { get; private set; } = 2.5;
         public int Points => Body.Count;
         public readonly Vector MapSize;
         public List<Item> ActiveItems = new List<Item>();
 
-        public Snake(Vector head, Vector tailDirection, int length, Vector mapSize)
+        public Snake(Vector head, Direction tailDirection, int length, Vector mapSize)
         {
             MapSize = mapSize;
             Body = new LinkedList<Vector>();
             Body.AddLast(head);
             for (var i = 0; i < length - 1; i++)
             {
-                Body.AddLast(Body.Last.Value.AddOnRing(tailDirection, mapSize));
+                Body.AddLast(Body.Last.Value.AddOnRing(Vector.GetVector(tailDirection), mapSize));
             }
         }
 
