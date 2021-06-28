@@ -23,7 +23,10 @@ namespace SnakeCore.Network
                 throw new Exception("too much players");
             handlers = new PlayerHandler[players.Length];
             for (var i = 0; i < players.Length; i++)
+            {
+                players[i].Send(game.MapSize);
                 handlers[i] =  new PlayerHandler(players[i],  game, i);
+            }
             var disp = ThreadDispatcher.GetInstance();
             foreach(var h in handlers)
                 disp.AddInQueue(h);

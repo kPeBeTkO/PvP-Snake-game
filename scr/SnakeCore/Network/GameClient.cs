@@ -19,10 +19,13 @@ namespace SnakeCore.Network
         private Direction oldDirection;
         public GameStateDto GameState;
         private Messaging server;
+        public readonly Vector MapSize;
 
         private GameClient(Messaging server)
         {
             this.server = server;
+            server.ReciveAll();
+            MapSize = (Vector)server.Data.Dequeue();
         }
 
         public static GameClient Connect(IPEndPoint address)
@@ -61,7 +64,9 @@ namespace SnakeCore.Network
             {
                 var updated = server.ReciveAll();
                 if (updated)
+                {
                     GameState = (GameStateDto)server.Data.Dequeue();
+                }
                 if (SnakeDirection != oldDirection)
                 {
                     oldDirection = SnakeDirection;
