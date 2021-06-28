@@ -101,7 +101,7 @@ namespace SnakeCore.Logic
                     item = new Apple(pos);
                     break;
                 case 1:
-                    item = new Poison(pos);
+                    item = new Apple(pos);
                     break;
                 case 2:
                     item = new Boots(pos);
