@@ -17,7 +17,7 @@ namespace SnakeGame
     {
         public static GameClient client;
         public WMPLib.WindowsMediaPlayer WMP = new WMPLib.WindowsMediaPlayer();
-        private GameStateDto state;
+        private GameDto state;
         private Button host = new Button();
         private Button connect = new Button();
         private Label text = new Label();
@@ -25,9 +25,9 @@ namespace SnakeGame
         static public Brush brush2 = new SolidBrush(Color.FromArgb(92, 188, 90));
         static public GameDraw game = new GameDraw();
 
-        private GameStateDto GetSnake()
+        private GameDto GetSnake()
         {
-            var state = new GameStateDto();
+            var state = new GameDto();
             var snake = new List<Vector>();
             var r = new Random();
             var v = r.Next(3, 10);

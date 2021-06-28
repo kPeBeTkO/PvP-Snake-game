@@ -105,7 +105,7 @@ namespace SnakeGame
             return frame;
         }
 
-        public Bitmap GetFrame(GameStateDto state, int height, int width)
+        public Bitmap GetFrame(GameDto state, int height, int width)
         {
             var frame = new Bitmap(field);
             if (state != null)

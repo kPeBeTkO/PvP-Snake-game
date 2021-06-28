@@ -17,7 +17,7 @@ namespace SnakeCore.Network
     {
         public Direction SnakeDirection;
         private Direction oldDirection;
-        public GameStateDto GameState;
+        public GameDto GameState;
         private Messaging server;
         public readonly Vector MapSize;
 
@@ -74,7 +74,8 @@ namespace SnakeCore.Network
                 if (updated)
                 {
                     while(server.Data.Count > 0)
-                        GameState = (GameStateDto)server.Data.Dequeue();
+                        GameState = (GameDto)server.Data.Dequeue();
+                    oldDirection = GameState.Snakes[GameState.PlayerId].Direction;
                 }
                 if (SnakeDirection != oldDirection)
                 {

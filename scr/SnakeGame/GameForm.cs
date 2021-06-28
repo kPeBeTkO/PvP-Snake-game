@@ -18,7 +18,7 @@ namespace SnakeGame
             return null;
         }
 
-        public Bitmap DrawFrame(GameStateDto state)
+        public Bitmap DrawFrame(GameDto state)
         {
             return null;
         }

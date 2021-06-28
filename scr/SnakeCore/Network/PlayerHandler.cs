@@ -39,7 +39,7 @@ namespace SnakeCore.Network
                 if (Active && GameUpdated)
                 {
                     GameUpdated = false;
-                    Active = messaging.Send(GameStateDto.Convert(game));
+                    Active = messaging.Send(GameDto.Convert(game));
                 }
             }
             messaging.Close();
