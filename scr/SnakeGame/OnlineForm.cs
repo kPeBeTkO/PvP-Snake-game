@@ -1,4 +1,4 @@
-﻿using Serialize;
+﻿//using Serialize;
 using SnakeCore.Logic;
 using SnakeCore.Network;
 using SnakeCore.Network.Serializers;
@@ -16,7 +16,7 @@ namespace SnakeGame
 {
     class OnlineForm : StartForm
     {
-        GameClient client;
+        /*GameClient client;
         public OnlineForm(int h, int w) : base(h, w)
         {
             
@@ -64,6 +64,6 @@ namespace SnakeGame
                     client.SnakeDirection = Direction.Right;
                     break;
             }
-        }
+        }*/
     }
 }

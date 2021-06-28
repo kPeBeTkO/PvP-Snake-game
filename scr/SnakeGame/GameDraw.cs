@@ -108,8 +108,11 @@ namespace SnakeGame
         public Bitmap GetFrame(GameStateDto state, int height, int width)
         {
             var frame = new Bitmap(field);
-            frame = DrawSnake(frame, state.Snakes[0], snakeTextures[0]);
-            frame = DrawItems(frame, state.Items, itemsTexture);
+            if (state != null)
+            {
+                frame = DrawSnake(frame, state.Snakes[0], snakeTextures[0]);
+                frame = DrawItems(frame, state.Items, itemsTexture);
+            }
             return GetBorders(frame, height, width);
         }
 

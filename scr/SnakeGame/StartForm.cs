@@ -9,11 +9,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SnakeCore.Network.Dto;
 using SnakeCore.Logic;
+using SnakeCore.Network;
 
 namespace SnakeGame
 {
     public partial class StartForm : Form
     {
+        public GameClient client;
         public WMPLib.WindowsMediaPlayer WMP = new WMPLib.WindowsMediaPlayer();
         private GameStateDto state = new GameStateDto();
         private Button host = new Button();
@@ -88,6 +90,8 @@ namespace SnakeGame
                 timer.Enabled = true;
                 timer.Tick += (send, args) => Invalidate();
                 timer.Start();
+                client = new GameClient("Server", new Vector(20, 15), 1);
+                StartForm.game.isStart = true;
             };
 
             connect.Click += (s, a) =>
@@ -106,7 +110,7 @@ namespace SnakeGame
                 if (game.isStart)
                 {
                     Controls.Clear();
-                    state = GetSnake();
+                    state = client.GameState;
                     var frame = game.GetFrame(state, Height, Width);
                     a.Graphics.DrawImage(frame, new PointF(0,0));
                 }

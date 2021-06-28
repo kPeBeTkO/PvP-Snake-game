@@ -65,10 +65,10 @@ namespace SnakeGame
             host.FlatStyle = FlatStyle.Flat;
             host.BackColor = Color.FromArgb(0, 100, 100, 100);
             host.FlatAppearance.BorderSize = 0;
-            host.Click += (s, a) =>
+/*            host.Click += (s, a) =>
             {
-                StartForm.game.isStart = true;
-            };
+                
+            };*/
 
 
             var connectText = MultiplyTexture("Textures\\connect.png", 10);
