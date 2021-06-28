@@ -15,26 +15,31 @@ namespace SnakeCore.Network
         public readonly ThreadDispatcher Dispatcher;
         private volatile bool active = true;
         private Serializer serializer;
+        private LocalConnectionFinder localFinder;
 
-        public GameConnectionServer(ThreadDispatcher dispatcher, IPEndPoint addres)
+        public GameConnectionServer(IPEndPoint addres)
         {
-            Dispatcher = dispatcher;
+            Dispatcher = ThreadDispatcher.GetInstance();
             Server = new Socket(SocketType.Stream, ProtocolType.Tcp);
             Server.Bind(addres);
             Server.Listen(10);
             
             serializer = new Serializer();
             serializer.AddCustom(new VectorSerializer());
+            serializer.AddCustom(new DirectionSerializer());
+            localFinder = new LocalConnectionFinder(new Dto.InviteDto("Hi!", addres.Port));
+            Dispatcher.AddInQueue(localFinder);
+            Dispatcher.AddInQueue(this);
         }
 
         public override string GetName()
         {
-            return "GameConnectionServer";
+            return "GameConnectionServer" + Server.LocalEndPoint.ToString();
         }
 
         public override void Run()
         {
-            var connectedPlayers = new Queue<PlayerMessaging>();
+            var connectedPlayers = new Queue<Messaging>();
             while (active)
             {
                 Socket handler = null;
@@ -42,7 +47,7 @@ namespace SnakeCore.Network
                 catch{}
                 if (handler != null)
                 {
-                    var player = new PlayerMessaging(handler, serializer);
+                    var player = new Messaging(handler, serializer);
                     if(player.IsConnected())
                         connectedPlayers.Enqueue(player);
                     if (connectedPlayers.Count > 1)

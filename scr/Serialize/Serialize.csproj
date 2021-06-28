@@ -5,12 +5,4 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="tail.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="tail.png" />
-  </ItemGroup>
-
 </Project>

@@ -10,10 +10,5 @@ namespace SnakeCore.Logic.Items
         {
             DeltaPoints = 1;
         }
-
-        public override void Tick()
-        {
-            TicksToLive--;
-        }
     }
 }

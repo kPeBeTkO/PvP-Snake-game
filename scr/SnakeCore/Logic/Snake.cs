@@ -77,7 +77,7 @@ namespace SnakeCore.Logic
             Speed = 0;
         }
 
-        public void Tick()
+        public bool Tick()
         {
             TicksPassed++;
             foreach(var item in ActiveItems)
@@ -91,7 +91,9 @@ namespace SnakeCore.Logic
             {
                 TicksPassed = 0;
                 Move();
+                return true;
             }
+            return false;
         }
 
         public void DeactivateItem(Item item)

@@ -34,7 +34,7 @@ namespace ThreadWorker
         public static ThreadDispatcher GetInstance()
         {
             if (dispatcher == null)
-                    dispatcher = new ThreadDispatcher(4);
+                    dispatcher = new ThreadDispatcher(8);
                 return dispatcher;
             
         }

@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThreadWorker", "ThreadWorke
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleSnake", "ConsoleSnake\ConsoleSnake.csproj", "{76AF87DD-C538-4DC7-B258-2F119D606BC4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{82BA9B65-31FB-4D3F-97FB-C2F0F6189742}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnakeCore.Tests", "SnakeCore.Tests\SnakeCore.Tests.csproj", "{5FB191B8-49CE-4045-9D06-46791C5B5F60}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{76AF87DD-C538-4DC7-B258-2F119D606BC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76AF87DD-C538-4DC7-B258-2F119D606BC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76AF87DD-C538-4DC7-B258-2F119D606BC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82BA9B65-31FB-4D3F-97FB-C2F0F6189742}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82BA9B65-31FB-4D3F-97FB-C2F0F6189742}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82BA9B65-31FB-4D3F-97FB-C2F0F6189742}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82BA9B65-31FB-4D3F-97FB-C2F0F6189742}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FB191B8-49CE-4045-9D06-46791C5B5F60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FB191B8-49CE-4045-9D06-46791C5B5F60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FB191B8-49CE-4045-9D06-46791C5B5F60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FB191B8-49CE-4045-9D06-46791C5B5F60}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,17 +5,89 @@ using System.Drawing;
 using SnakeCore.Logic;
 using System.Timers;
 using SnakeCore.Logic.Items;
+using SnakeCore.Network;
+using SnakeCore.Network.Serializers;
+using SnakeCore.Network.Dto;
+using System.Net;
+using Serialize;
 
 namespace ConsoleSnake
 {
 
     class Program
     {
-        static Game game;
-        static char[,] map;
-        static int w;
-        static int h;
+        
         static void Main()
+        {
+            Console.ReadLine();
+            Run2();
+        }
+        static Direction direction = Direction.Right;
+        static GameStateDto gameState;
+        static Messaging server;
+        static void Run2()
+        {
+            var serializer = new Serializer();
+            serializer.AddCustom(new VectorSerializer());
+            serializer.AddCustom(new DirectionSerializer());
+            //var address = new IPEndPoint(IPAddress.Parse("192.168.0.102"), 9000);
+            var address = new IPEndPoint(IPAddress.Loopback, 9000);
+            server = Messaging.Connect(address, serializer);
+            var gameTimer = new Timer(50);
+            gameTimer.Elapsed += (x, a) => Update();
+            gameTimer.AutoReset = true;
+            gameTimer.Enabled = true;
+            gameTimer.Start();
+            var drawTimer = new Timer(200);
+            drawTimer.Elapsed += (x, a) => Draw();
+            drawTimer.AutoReset = true;
+            drawTimer.Enabled = true;
+            drawTimer.Start();
+            var key = ConsoleKey.Enter;
+            while(true)
+            {
+                if (Console.KeyAvailable)
+                {
+                    key = Console.ReadKey(true).Key;
+                    switch (key)
+                    {
+                        case ConsoleKey.W:
+                            direction = Direction.Down;
+                            break;
+                        case ConsoleKey.S:
+                            direction = Direction.Up;
+                            break;
+                        case ConsoleKey.A:
+                            direction = Direction.Left;
+                            break;
+                        case ConsoleKey.D:
+                            direction = Direction.Right;
+                            break;
+                    }
+                    lock (server)
+                    {
+                        server.SendDirection(direction);
+                    }
+                }
+            }
+        }
+
+        static void Update()
+        {
+            Result<GameStateDto> result;
+            lock(server)
+            {
+                result = server.GetGameState();
+            }
+            if (result.Success)
+                gameState = result.Value;
+        }
+
+        static Game game;
+        static char[,] map = new char[20, 20];
+        static int w = 20;
+        static int h = 20;
+        static void Run1()
         {
             var mapSize = new Vector(19, 19);
             map = new char[mapSize.X, mapSize.Y];
@@ -30,7 +102,7 @@ namespace ConsoleSnake
             gameTimer.Enabled = true;
             gameTimer.Start();
             var drawTimer = new Timer(200);
-            drawTimer.Elapsed += (x, a) => Draw();
+            drawTimer.Elapsed += (x, a) => Draw1();
             drawTimer.AutoReset = true;
             drawTimer.Enabled = true;
             drawTimer.Start();
@@ -76,6 +148,32 @@ namespace ConsoleSnake
         }
 
         static void Draw()
+        {
+            var gameState = Program.gameState;
+            Console.CursorLeft = 0;
+            Console.CursorTop = 0;
+            for (var  i = 0; i < h; i++)
+                for (var j = 0; j < w; j++)
+                    map[i, j] = ' ';
+            foreach(var v in gameState.Player)
+                map[v.X, v.Y] = 'X';
+            foreach(var v in gameState.Enemy)
+                map[v.X, v.Y] = 'X';
+            map[gameState.Player[0].X, gameState.Player[0].Y] = 'O';
+            map[gameState.Enemy[0].X, gameState.Enemy[0].Y] = 'O';
+            foreach(var a in gameState.Items)
+                map[a.Location.X, a.Location.Y] = a.Type[0];
+            for (var  i =0; i < h; i++)
+            {
+                for (var j  =0 ; j< w; j++)
+                    Console.Write(map[j, i]);
+                Console.WriteLine('#');
+            }
+            Console.WriteLine("#####################");
+            Console.WriteLine(direction);
+        }
+
+        static void Draw1()
         {
             Console.CursorLeft = 0;
             Console.CursorTop = 0;

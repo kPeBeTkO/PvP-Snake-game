@@ -19,6 +19,7 @@ namespace Serialize
         {
             this.handler = handler;
             this.serializer = serializer;
+            handler.NoDelay = true;
         }
 
         public static DataTransferHandler Connect(IPEndPoint addres, Serializer serializer)
@@ -28,9 +29,34 @@ namespace Serialize
             return new DataTransferHandler(socket, serializer);
         }
 
+        public void Close()
+        {
+            handler.Close();
+        }
+
         public void Send(object obj)
         {
             handler.Send(Encode(obj));
+        }
+
+        public bool TrySend(object obj)
+        {
+            try
+            {
+                Send(obj);
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public Result<T> TryRecieve<T>()
+        {
+            if (handler.Available > 0)
+                return Result.Ok(Recieve<T>());
+            return Result.Fail<T>();
         }
 
         public T Recieve<T>()
