@@ -21,7 +21,7 @@ namespace SnakeGame
         private Label text = new Label();
         static public Brush brush1 = new SolidBrush(Color.FromArgb(48, 165, 82));
         static public Brush brush2 = new SolidBrush(Color.FromArgb(92, 188, 90));
-        static public Game game = new Game();
+        static public GameDraw game = new GameDraw();
 
         private GameStateDto GetSnake()
         {
@@ -66,14 +66,15 @@ namespace SnakeGame
                     newP = new Vector(r.Next(20), r.Next(15));
                 state.Items[i] = new ItemDto() { Location = newP, Type = type };
             }
-            state.Player = snake.ToArray();
+            state.Snakes = new SnakeDto[1];
+            state.Snakes[0] = new SnakeDto();
+            state.Snakes[0].Body = snake.ToArray();
             return state;
         }
 
         public StartForm()
         {
             DoubleBuffered = true;
-            Icon = new Icon("Textures\\icon.ico");
 
             var menu = new Menu(host, connect, text, Height, Width, Controls);
 

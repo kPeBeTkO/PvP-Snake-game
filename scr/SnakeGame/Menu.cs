@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using SnakeCore.Network.Dto;
 using SnakeCore.Logic;
 using static System.Windows.Forms.Control;
+using SnakeCore.Network;
 
 namespace SnakeGame
 {
@@ -17,6 +18,13 @@ namespace SnakeGame
     {
         private ControlCollection controls;
         bool secondMenu = false;
+        private Button back = new Button();
+        private TextBox box = new TextBox();
+        private Button[] invitesButt;
+        private int PrevHeight1 = 0;
+        private int PrevWidth1 = 0;
+        private int PrevHeight2 = 0;
+        private int PrevWidth2 = 0;
         private Bitmap MultiplyTexture(String str, int times)
         {
             var texture = new Bitmap(str);
@@ -29,6 +37,24 @@ namespace SnakeGame
         public Menu(Button host, Button connect, Label text, int Height, int Width, ControlCollection control)
         {
             controls = control;
+
+            box.Font = new Font("impact", 40);
+
+            var backText = MultiplyTexture("Textures\\back.png", 10);
+            back.Image = backText;
+            back.Size = new Size(backText.Width, backText.Height);
+            back.FlatStyle = FlatStyle.Flat;
+            back.BackColor = Color.FromArgb(0, 100, 100, 100);
+            back.FlatAppearance.BorderSize = 0;
+            back.Location = new Point(30, 30);
+            back.Click += (s, a) =>
+            {
+                secondMenu = false;
+                controls.Clear();
+                PrevWidth1 = 0;
+                PrevHeight1 = 0;
+            };
+
             var textText = MultiplyTexture("Textures\\title.png", 10);
             text.Image = textText;
             text.BackColor = Color.FromArgb(0, 0, 0, 0);
@@ -53,6 +79,9 @@ namespace SnakeGame
             connect.Click += (s, a) =>
             {
                 secondMenu = true;
+                controls.Clear();
+                PrevWidth2 = 0;
+                PrevHeight2 = 0;
             };
         }
 
@@ -61,18 +90,70 @@ namespace SnakeGame
             DrawBack(g, Height, Width);
             if (!secondMenu)
             {
-                SetControls(host, connect, text, Height, Width);
-                controls.Add(host);
-                controls.Add(connect);
-                controls.Add(text);
+                if (PrevHeight1 != Height || PrevWidth1 != Width)
+                {
+                    SetControlsFirst(host, connect, text, Height, Width);
+                    PrevWidth1 = Width;
+                    PrevHeight1 = Height;
+                }
             }
             else
             {
-                var box = new TextBox();
-                controls.Add(box);
-                controls.Clear();
+                if (PrevHeight2 != Height || PrevWidth2 != Width)
+                {
+                    SetControlsSecond(Height, Width);
+                    SetConnectList(Height, Width);
+                    PrevWidth2 = Width;
+                    PrevHeight2 = Height;
+                }
             }
 
+        }
+
+        private void SetConnectList(int Height, int Width)
+        {
+            var invites = LocalConnectionFinder.TryGetInvites();
+            invitesButt = new Button[invites.Length];
+/*            var i1 = new InviteDto();
+            i1.HostName = "Play1";
+            var i2 = new InviteDto();
+            i2.HostName = "Play2";
+            var i3 = new InviteDto();
+            i3.HostName = "Play3";
+            var i4 = new InviteDto();
+            i4.HostName = "Play4";
+            var i5 = new InviteDto();
+            i5.HostName = "Play5";
+            var invites = new InviteDto[5];
+            invites[0] = i1;
+            invites[1] = i2;
+            invites[2] = i3;
+            invites[3] = i4;
+            invites[4] = i5;
+            invitesButt = new Button[invites.Length];*/
+            var size = (4 * Height) / (8 * invites.Length);
+            for (int i = 0; i < invites.Length; i++)
+            {
+                var ip = new Button();
+                ip.Text = invites[i].HostName;
+                ip.Font = new Font("impact", 40);
+                ip.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
+                ip.FlatStyle = FlatStyle.Flat;
+                ip.BackColor = Color.FromArgb(0, 100, 100, 100);
+                ip.FlatAppearance.BorderSize = 0;
+                ip.Location = new Point(30, 30);
+                ip.Location = new Point(Width / 4, Height / 8 + ((i + 1) * size));
+                ip.ForeColor = Color.White;
+                ip.Click += (s, a) =>
+                {
+                    
+                };
+                invitesButt[i] = ip;
+            }
+            for (int i = 0; i < invitesButt.Length; i++)
+            {
+                controls.Add(invitesButt[i]);
+            }
         }
 
         private void DrawBack(Graphics g, int Height, int Width)
@@ -96,14 +177,25 @@ namespace SnakeGame
             }
         }
 
-        private void SetControls(Button host, Button connect, Label text, int Height, int Width)
+        private void SetControlsFirst(Button host, Button connect, Label text, int Height, int Width)
         {
-            text.Size = new Size(Width - Width / 2, 8 * (Width - Width / 2) / 58);
-            host.Size = new Size(Width - Width / 2, 8 * (Width - Width / 2) / 32);
-            connect.Size = new Size(Width - Width / 2, 8 * (Width - Width / 2) / 55);
+            text.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
+            host.Size = new Size(Width / 2, 8 * (Width / 2) / 32);
+            connect.Size = new Size(Width / 2, 8 * (Width / 2) / 55);
             text.Location = new Point(Width / 4, Height / 8);
             host.Location = new Point(Width / 4, Height / 4);
             connect.Location = new Point(Width / 4, 2 * Height / 4);
+            controls.Add(host);
+            controls.Add(connect);
+            controls.Add(text);
+        }
+
+        private void SetControlsSecond(int Height, int Width)
+        {
+            box.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
+            box.Location = new Point(Width / 4, Height / 8);
+            controls.Add(back);
+            controls.Add(box);
         }
     }
 

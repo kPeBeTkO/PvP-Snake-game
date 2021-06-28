@@ -1,4 +1,4 @@
-﻿using Serialize;
+﻿//using Serialize;
 using SnakeCore.Logic;
 using SnakeCore.Network;
 using SnakeCore.Network.Serializers;
@@ -16,7 +16,7 @@ namespace SnakeGame
 {
     class OnlineForm : StartForm
     {
-        Messaging server;
+       /* Messaging server;
         Direction direction = Direction.Up;
         Direction oldDirection = Direction.Up;
         public OnlineForm(int h, int w) : base(h, w)
@@ -29,7 +29,7 @@ namespace SnakeGame
             CreateAllTextures();
             CreateField(fieldHeight, fieldWidth);
             var invites = new InviteDto[0];
-            while(invites.Length < 1)
+            while (invites.Length < 1)
             {
                 invites = LocalConnectionFinder.TryGetInvites();
             }
@@ -38,7 +38,7 @@ namespace SnakeGame
             var address = new IPEndPoint(IPAddress.Parse(invites[0].Address), invites[0].Port);
             server = Messaging.Connect(address);
             KeyDown += ChangeDirection;
-            (new Thread(Update){ IsBackground = true }).Start();
+            (new Thread(Update) { IsBackground = true }).Start();
         }
 
         void Update()
@@ -73,6 +73,6 @@ namespace SnakeGame
                     direction = Direction.Right;
                     break;
             }
-        }
+        }*/
     }
 }

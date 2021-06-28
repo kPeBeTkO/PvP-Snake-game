@@ -46,7 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Game.cs" />
+    <Compile Include="GameDraw.cs" />
     <Compile Include="GameForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -54,6 +54,9 @@
       <DependentUpon>GameForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Menu.cs" />
+    <Compile Include="OnlineForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Resources.cs" />
     <Compile Include="StartForm.cs">
       <SubType>Form</SubType>
@@ -90,7 +93,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Sounds\AlIkAbIr_-_Square.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Textures\apple.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Textures\back.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Textures\body.png">
@@ -129,6 +138,10 @@
       <Project>{e1fc1885-8fa8-4a44-8663-de90d66f9a0c}</Project>
       <Name>SnakeCore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ThreadWorker\ThreadWorker.csproj">
+      <Project>{5F69F5AF-6235-4307-940D-E6E2D37B7F6C}</Project>
+      <Name>ThreadWorker</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="stdole">
@@ -150,8 +163,6 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Sounds\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
