@@ -29,7 +29,7 @@ namespace SnakeCore.Network.Serializers
             Type type = null;
             switch(typeStr)
             {
-                case "GameStateDto":
+                case "GameDto":
                     type = typeof(GameDto);
                     break;
                 case "Direction":
