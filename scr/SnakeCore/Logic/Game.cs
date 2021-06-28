@@ -74,7 +74,10 @@ namespace SnakeCore.Logic
                 {
                     Items.Remove(item);
                     if (item.OnEnemy)
-                        GetOther(snake).Consume(item);
+                    {
+                        var othre =  GetOther(snake);
+                       if (othre != null) othre.Consume(item);
+                    }
                     else
                         snake.Consume(item);
                 }

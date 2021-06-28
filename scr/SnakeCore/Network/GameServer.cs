@@ -18,6 +18,7 @@ namespace SnakeCore.Network
 
         public GameServer(Messaging[] players, Game game)
         {
+            this.game = game;
             if (players.Length > game.Snakes.Length)
                 throw new Exception("too much players");
             handlers = new PlayerHandler[players.Length];

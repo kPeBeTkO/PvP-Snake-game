@@ -43,7 +43,7 @@ namespace SnakeCore.Network
             var res = messaging.TrySend("Hello");
             if (!res)
                 return false;
-            for (var i  =0; i < 5; i++)
+            for (var i  =0; i < 10; i++)
             {
                 var ans = messaging.TryRecieve<string>();
                 if (ans.Success)
@@ -55,7 +55,7 @@ namespace SnakeCore.Network
 
         private bool ConfirmConnection()
         {
-            for (var i = 0; i < 5; i++)
+            for (var i = 0; i < 10; i++)
             {
                 var req = messaging.TryRecieve<string>();
                 if (req.Value == "Hello")
@@ -63,17 +63,20 @@ namespace SnakeCore.Network
                     messaging.Send("Hello");
                     return true;
                 }
+                Thread.Sleep(10);
             }
             return false;
         }
 
         public bool ReciveAll()
         {
+            var recieved = false;
             while(true)
             {
                 var result = messaging.TryRecieve();
+                recieved |= result.Success;
                 if (!result.Success)
-                    return false;
+                    return recieved;
                 if (result.Value is string s)
                     Messages.Enqueue(s);
                 else
