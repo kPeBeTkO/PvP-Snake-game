@@ -15,7 +15,7 @@ namespace SnakeCore.Logic
         Random rnd = new Random();
         
         public static int TPS = 20;
-        const int itemsCount = 2;
+        const int itemsCount = 10;
         public Game(Snake[] snakes, Vector mapSize)
         {
             Snakes = snakes;
@@ -24,16 +24,37 @@ namespace SnakeCore.Logic
                 GenerateItem();
         }
 
-        public void Tick()
+        public static Game GenerateGame(Vector mapSize, int playersCount)
         {
+            if (mapSize.Y < 5)
+                mapSize = new Vector(mapSize.X, 5);
+            if (mapSize.X / (playersCount + 1) < 2)
+                mapSize = new Vector((playersCount + 1) * 2, mapSize.Y);
+            var snakes = new Snake[playersCount];
+            var headY = mapSize.Y / 2;
+            var ofset = mapSize.X / (playersCount + 1);
+            for (var i = 0; i < playersCount; i++)
+            {
+                snakes[i] = new Snake(new Vector(1 + ofset * i, headY), Direction.Down, 3, mapSize);
+            }
+            return new Game(snakes, mapSize);
+        }
+
+        public bool Tick()
+        {
+            var changed = false;
             foreach(var snake in Snakes)
-                snake.Tick();
+                changed = changed || snake.Tick();
             foreach(var item in Items)
-                item.Tick();
+                changed = changed || item.Tick();
             Items.RemoveAll(i => i.TicksToLive == 0);
             while(Items.Count < itemsCount)
+            {
                 GenerateItem();
+                changed = true;
+            }
             CheckAllCollisions();
+            return changed;
         }
 
         public void CheckAllCollisions()
@@ -53,7 +74,10 @@ namespace SnakeCore.Logic
                 {
                     Items.Remove(item);
                     if (item.OnEnemy)
-                        GetOther(snake).Consume(item);
+                    {
+                        var othre =  GetOther(snake);
+                       if (othre != null) othre.Consume(item);
+                    }
                     else
                         snake.Consume(item);
                 }
@@ -69,7 +93,7 @@ namespace SnakeCore.Logic
         public void GenerateItem()
         {
             Item item = null;
-            var rn = rnd.Next(3);
+            var rn = rnd.Next(5);
             var pos = GetFreeSpot();
             switch(rn)
             {
@@ -77,9 +101,15 @@ namespace SnakeCore.Logic
                     item = new Apple(pos);
                     break;
                 case 1:
-                    item = new Poison(pos);
+                    item = new Apple(pos);
                     break;
                 case 2:
+                    item = new Boots(pos);
+                    break;
+                case 3:
+                    item = new Apple(pos);
+                    break;
+                case 4:
                     item = new Boots(pos);
                     break;
             }

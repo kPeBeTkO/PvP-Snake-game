@@ -6,6 +6,6 @@ namespace SnakeCore.Logic
 {
     public interface IUpdatable
     {
-        void Tick();
+        bool Tick();
     }
 }

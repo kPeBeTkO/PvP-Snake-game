@@ -8,20 +8,46 @@ using SnakeCore.Network.Dto;
 using ThreadWorker;
 using Serialize;
 using System.Diagnostics;
+using System.Net.NetworkInformation;
+using System.Linq;
 
 namespace SnakeCore.Network
 {
     public class GameClient : ThreadedTask
     {
-        public Direction direction;
-        private Messaging messaging;
+        public Direction SnakeDirection;
+        private Direction oldDirection;
         public GameStateDto GameState;
-        public GameClient(IPEndPoint address)
+        private Messaging server;
+
+        private GameClient(Messaging server)
         {
-            var serializer = new Serializer();
-            serializer.AddCustom(new VectorSerializer());
-            serializer.AddCustom(new DirectionSerializer());
-            messaging = Messaging.Connect(address, serializer);
+            this.server = server;
+        }
+
+        public static GameClient Connect(IPEndPoint address)
+        {
+            var server = Messaging.Connect(address);
+            if (server != null)
+            {
+                var client = new GameClient(server);
+                var dispatcher = ThreadDispatcher.GetInstance();
+                dispatcher.AddInQueue(client);
+                return client;
+            }
+            return null;
+        }
+
+        public static GameClient Host(string hostname, Vector mapSize, int playersCount)
+        {
+            var port = NextFreePort();
+            var serverConnection = new GameConnectionServer(hostname, mapSize, playersCount, IPAddress.Any, port);
+            var dispatcher = ThreadDispatcher.GetInstance();
+            dispatcher.AddInQueue(serverConnection);
+            var server = Messaging.Connect(new IPEndPoint(IPAddress.Loopback, port));
+            var client = new GameClient(server);
+            dispatcher.AddInQueue(client);
+            return client;
         }
 
         public override string GetName()
@@ -31,18 +57,34 @@ namespace SnakeCore.Network
 
         public override void Run()
         {
-            var watch = new Stopwatch();
-            watch.Start();
-            long lasttime = 0;
             while(true)
             {
-                var curtime = watch.ElapsedMilliseconds;
-                if (curtime - lasttime >= 1000 / Game.TPS)
+                var updated = server.ReciveAll();
+                if (updated)
+                    GameState = (GameStateDto)server.Data.Dequeue();
+                if (SnakeDirection != oldDirection)
                 {
-                    lasttime = curtime;
-                    GameState = messaging.GetGameState(direction);
+                    oldDirection = SnakeDirection;
+                    server.Send(oldDirection);
                 }
             }
+        }
+
+        static bool IsFree(int port)
+        {
+            IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
+            IPEndPoint[] listeners = properties.GetActiveTcpListeners();
+            int[] openPorts = listeners.Select(item => item.Port).ToArray<int>();
+            return openPorts.All(openPort => openPort != port);
+        }
+
+        static int NextFreePort(int port = 0) 
+        {
+            port = (port > 0) ? port : new Random().Next(1, 65535);
+            while (!IsFree(port)) {
+                port += 1;
+            }
+            return port;
         }
     }
 }

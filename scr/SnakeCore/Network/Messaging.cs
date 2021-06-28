@@ -6,6 +6,7 @@ using System.Net;
 using SnakeCore.Network.Dto;
 using SnakeCore.Network.Serializers;
 using SnakeCore.Logic;
+using System.Threading;
 using Serialize;
 
 namespace SnakeCore.Network
@@ -13,38 +14,83 @@ namespace SnakeCore.Network
     public class Messaging
     {
         DataTransferHandler messaging;
-        public Messaging(Socket player, Serializer serializer)
+        public Queue<string> Messages = new Queue<string>();
+        public Queue<object> Data = new Queue<object>(); 
+        public Messaging(Socket player)
         {
-            messaging = new DataTransferHandler(player, serializer);
+            messaging = new DataTransferHandler(player, new MessageSerializer());
         }
         
-        public static Messaging Connect(IPEndPoint addres, Serializer serializer)
+        public static Messaging Connect(IPEndPoint addres)
         {
             var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
             socket.Connect(addres);
             if (!socket.Connected)
                 return null;
-            var mes = new Messaging(socket, serializer);
-            mes.ConfirmConnection();
-            return mes;
+            var mes = new Messaging(socket);
+            if (mes.ConfirmConnection())
+                return mes;
+            else 
+            {
+                return null;
+            }
+        }
+
+        public void Close()
+        {
+            messaging.TrySend("Disconnect");
+            messaging.Close();
         }
 
         public bool IsConnected()
         {
-            messaging.Send("Hello");
-            var ans = messaging.Recieve<string>();
-            return ans == "Hello";
+            var res = messaging.TrySend("Hello");
+            if (!res)
+                return false;
+            for (var i  =0; i < 10; i++)
+            {
+                var ans = messaging.TryRecieve<string>();
+                if (ans.Success)
+                    return ans.Value == "Hello";
+                Thread.Sleep(10);
+            }
+            return false;
         }
 
         private bool ConfirmConnection()
         {
-            var req = messaging.Recieve<string>();
-            if (req == "Hello")
+            for (var i = 0; i < 10; i++)
             {
-                messaging.Send("Hello");
-                return true;
+                var req = messaging.TryRecieve<string>();
+                if (req.Value == "Hello")
+                {
+                    messaging.Send("Hello");
+                    return true;
+                }
+                Thread.Sleep(10);
             }
             return false;
+        }
+
+        public bool ReciveAll()
+        {
+            var recieved = false;
+            while(true)
+            {
+                var result = messaging.TryRecieve();
+                recieved |= result.Success;
+                if (!result.Success)
+                    return recieved;
+                if (result.Value is string s)
+                    Messages.Enqueue(s);
+                else
+                    Data.Enqueue(result.Value);
+            }
+        }
+
+        public bool Send(object obj)
+        {
+            return messaging.TrySend(obj);
         }
 
         public bool SendGameState(GameStateDto gameState)
@@ -52,31 +98,41 @@ namespace SnakeCore.Network
             messaging.Send("GameState");
             messaging.Send(gameState);
             var ans = messaging.Recieve<string>();
-            return ans == "Ok";
+            if (ans == "Ok")
+                return true;
+            return false;
         }
 
-        public GameStateDto GetGameState(Direction currentDir)
+        public Result<GameStateDto> GetGameState()
+        {
+            var ans = messaging.TryRecieve<string>();
+            if (ans.Success && ans.Value == "GameState")
+            {
+                var gameState = messaging.Recieve<GameStateDto>();
+                messaging.Send("Ok");
+                return Result.Ok(gameState);
+            }
+            return Result.Fail<GameStateDto>();
+        }
+        
+        public bool SendDirection(Direction currentDir)
         {
             messaging.Send("Direction");
             messaging.Send(currentDir);
             var ans = messaging.Recieve<string>();
-            if (ans == "GameState")
-            {
-                var gameState = messaging.Recieve<GameStateDto>();
-                messaging.Send("Ok");
-                return gameState;
-            }
-            return null;
+            return ans == "Ok";
         }
 
-        public Direction GetPlayerDirection()
+        public Result<Direction> GetPlayerDirection()
         {
-            var ans = messaging.Recieve<string>();
-            if (ans == "Direction")
+            var ans = messaging.TryRecieve<string>();
+            if (ans.Success && ans.Value == "Direction")
             {
-                return  messaging.Recieve<Direction>();
+                var dir =  messaging.Recieve<Direction>();
+                messaging.Send("Ok");
+                return Result.Ok(dir);
             }
-            return Direction.Up;
+            return Result.Fail<Direction>();
         }
     }
 }

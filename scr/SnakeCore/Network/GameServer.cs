@@ -12,17 +12,21 @@ namespace SnakeCore.Network
 {
     class GameServer : ThreadedTask
     {
-        readonly Messaging[] players;
+        readonly PlayerHandler[] handlers;
         readonly Game game;
-        readonly Snake[] snakes ;
-        public GameServer(Messaging player1, Messaging player2)
+        public volatile bool Active = true;
+
+        public GameServer(Messaging[] players, Game game)
         {
-            players = new Messaging[]{ player1, player2 };
-            var mapSize = new Vector(20, 20);
-            var snake1 = new Snake(new Vector(4, 5), new Vector(0, -1), 3, mapSize);
-            var snake2 = new Snake(new Vector(9, 5), new Vector(0, -1), 3, mapSize);
-            game = new Game(new Snake[]{ snake1, snake2 }, mapSize);
-            snakes = new Snake[]{ snake1, snake2 };
+            this.game = game;
+            if (players.Length > game.Snakes.Length)
+                throw new Exception("too much players");
+            handlers = new PlayerHandler[players.Length];
+            for (var i = 0; i < players.Length; i++)
+                handlers[i] =  new PlayerHandler(players[i],  game, i);
+            var disp = ThreadDispatcher.GetInstance();
+            foreach(var h in handlers)
+                disp.AddInQueue(h);
         }
 
         public override string GetName()
@@ -35,36 +39,24 @@ namespace SnakeCore.Network
             var watch = new Stopwatch();
             watch.Start();
             long lasttime = 0;
-            while(true)
+            while(Active)
             {
                 var curtime = watch.ElapsedMilliseconds;
                 if (curtime - lasttime >= 1000 / Game.TPS)
                 {
                     lasttime = curtime;
-                    game.Tick();
-
-                    var dir = players[0].GetPlayerDirection();
-                    snakes[0].ChangeDirection(dir);
-                    var dto = GetDto(snakes[0], snakes[1]);
-                    players[0].SendGameState(dto);
-
-                    dir = players[1].GetPlayerDirection();
-                    snakes[1].ChangeDirection(dir);
-                    dto = GetDto(snakes[1], snakes[0]);
-                    players[1].SendGameState(dto);
+                    var changed = game.Tick();
+                    if (changed)
+                        foreach(var handler in handlers)
+                            if (handler.Active)
+                                handler.GameUpdated = true;
+                            else
+                                Active = false;
                 }
             }
+            foreach(var handler in handlers)
+                handler.Stop();
         }
 
-        private GameStateDto GetDto(Snake player, Snake enemy)
-        {
-            return new GameStateDto()
-            {
-                Player = player.Body.ToArray(),
-                Enemy = enemy.Body.ToArray(),
-                Items = game.Items.Select(i => ItemDto.Convert(i)).ToArray(),
-                PlayerDirection = player.Direction
-            };
-        }
     }
 }

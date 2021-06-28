@@ -18,9 +18,10 @@ namespace SnakeCore.Logic.Items
             Position = pos;
         }
 
-        public virtual void Tick()
+        public virtual bool Tick()
         {
            TicksToLive--;
+            return TicksToLive == 0;
         }
     }
 }
