@@ -78,7 +78,7 @@ namespace SnakeGame
         {
             DoubleBuffered = true;
 
-            var menu = new Menu(host, connect, text, Height, Width, Controls);
+            var menu = new Menu(host, connect, text, Controls, client);
 
             host.Click += (s, a) =>
             {
@@ -96,9 +96,6 @@ namespace SnakeGame
 
             connect.Click += (s, a) =>
             {
-                WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
-                //WMP.settings.volume = 100;
-                WMP.controls.play();
                 var timer = new Timer();
                 timer.Interval = 2000;
                 timer.Enabled = true;

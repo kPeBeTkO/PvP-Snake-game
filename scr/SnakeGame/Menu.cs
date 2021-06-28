@@ -11,11 +11,14 @@ using SnakeCore.Network.Dto;
 using SnakeCore.Logic;
 using static System.Windows.Forms.Control;
 using SnakeCore.Network;
+using System.Net;
 
 namespace SnakeGame
 {
     class Menu
     {
+        public WMPLib.WindowsMediaPlayer WMP = new WMPLib.WindowsMediaPlayer();
+        private GameClient client;
         private ControlCollection controls;
         bool secondMenu = false;
         private Button back = new Button();
@@ -34,11 +37,23 @@ namespace SnakeGame
             g.DrawImage(texture, new Rectangle(0, 0, texture.Width * times, texture.Height * times));
             return bigTexture;
         }
-        public Menu(Button host, Button connect, Label text, int Height, int Width, ControlCollection control)
+        public Menu(Button host, Button connect, Label text, ControlCollection control, GameClient client)
         {
+            this.client = client;
             controls = control;
 
             box.Font = new Font("impact", 40);
+            box.KeyDown += (s, a) =>
+            {
+                if (a is KeyEventArgs key && key.KeyCode == Keys.Enter)
+                {
+                    var ip = box.Text.Split(':')[0];
+                    var port = int.Parse(box.Text.Split(':')[1]);
+                    var address = new IPEndPoint(IPAddress.Parse(ip), port);
+                    StartForm.game.isStart = true;
+                    client = new GameClient(address);
+                }
+            };
 
             var backText = MultiplyTexture("Textures\\back.png", 10);
             back.Image = backText;
@@ -61,15 +76,10 @@ namespace SnakeGame
 
             var hostText = MultiplyTexture("Textures\\host.png", 10);
             host.Image = hostText;
-            host.Size = new Size(Width / 4, Height / 6);
+            //host.Size = new Size(Width / 4, Height / 6);
             host.FlatStyle = FlatStyle.Flat;
             host.BackColor = Color.FromArgb(0, 100, 100, 100);
             host.FlatAppearance.BorderSize = 0;
-/*            host.Click += (s, a) =>
-            {
-                
-            };*/
-
 
             var connectText = MultiplyTexture("Textures\\connect.png", 10);
             connect.Image = connectText;
@@ -113,6 +123,8 @@ namespace SnakeGame
         private void SetConnectList(int Height, int Width)
         {
             var invites = LocalConnectionFinder.TryGetInvites();
+            if (invites.Length == 0)
+                return;
             invitesButt = new Button[invites.Length];
 /*            var i1 = new InviteDto();
             i1.HostName = "Play1";
@@ -146,13 +158,17 @@ namespace SnakeGame
                 ip.ForeColor = Color.White;
                 ip.Click += (s, a) =>
                 {
-                    
+                    WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
+                    WMP.controls.play();
+                    var address = new IPEndPoint(IPAddress.Parse(invites[i].Address), invites[i].Port);
+                    client = new GameClient(address);
                 };
                 invitesButt[i] = ip;
             }
             for (int i = 0; i < invitesButt.Length; i++)
             {
                 controls.Add(invitesButt[i]);
+                StartForm.game.isStart = true;
             }
         }
 
