@@ -21,11 +21,10 @@ namespace SnakeCore.Network
         private bool oneGame;
         private Vector mapSize;
 
-        public GameConnectionServer(string hostname, Vector mapSize, int playersCount, IPAddress ip, int port,  bool oneGame = true)
+        public GameConnectionServer(string hostname, Vector mapSize, int playersCount, IPAddress ip, int port, bool oneGame = true)
         {
             var invite = new InviteDto(hostname, port);
-            if (ip != null)
-                invite.Address = ip.ToString();
+
             if (ip == null)
                 ip = IPAddress.Any;
 

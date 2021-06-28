@@ -24,8 +24,15 @@ namespace SnakeCore.Network
         private GameClient(Messaging server)
         {
             this.server = server;
-            server.ReciveAll();
-            MapSize = (Vector)server.Data.Dequeue();
+            while (true)
+            {
+                server.ReciveAll();
+                if (server.Data.Count > 0)
+                {
+                    MapSize = (Vector)server.Data.Dequeue();
+                    break;
+                }
+            }
         }
 
         public static GameClient Connect(IPEndPoint address)
@@ -44,6 +51,7 @@ namespace SnakeCore.Network
         public static GameClient Host(string hostname, Vector mapSize, int playersCount)
         {
             var port = NextFreePort();
+            port = 9000;
             var serverConnection = new GameConnectionServer(hostname, mapSize, playersCount, IPAddress.Any, port);
             var dispatcher = ThreadDispatcher.GetInstance();
             dispatcher.AddInQueue(serverConnection);
@@ -65,7 +73,8 @@ namespace SnakeCore.Network
                 var updated = server.ReciveAll();
                 if (updated)
                 {
-                    GameState = (GameStateDto)server.Data.Dequeue();
+                    while(server.Data.Count > 0)
+                        GameState = (GameStateDto)server.Data.Dequeue();
                 }
                 if (SnakeDirection != oldDirection)
                 {

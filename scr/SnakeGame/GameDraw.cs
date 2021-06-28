@@ -110,7 +110,9 @@ namespace SnakeGame
             var frame = new Bitmap(field);
             if (state != null)
             {
-                frame = DrawSnake(frame, state.Snakes[0], snakeTextures[0]);
+                if (state.Snakes != null)
+                    foreach(var snake in state.Snakes)
+                        frame = DrawSnake(frame, snake, snakeTextures[0]);
                 frame = DrawItems(frame, state.Items, itemsTexture);
             }
             return GetBorders(frame, height, width);

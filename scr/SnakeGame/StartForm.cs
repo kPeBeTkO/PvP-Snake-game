@@ -15,9 +15,9 @@ namespace SnakeGame
 {
     public partial class StartForm : Form
     {
-        public GameClient client;
+        public static GameClient client;
         public WMPLib.WindowsMediaPlayer WMP = new WMPLib.WindowsMediaPlayer();
-        private GameStateDto state = new GameStateDto();
+        private GameStateDto state;
         private Button host = new Button();
         private Button connect = new Button();
         private Label text = new Label();
@@ -79,7 +79,7 @@ namespace SnakeGame
             DoubleBuffered = true;
 
             var menu = new Menu(host, connect, text, Controls, client);
-
+            KeyDown += ChangeDirection;
             host.Click += (s, a) =>
             {
                 WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
@@ -90,15 +90,14 @@ namespace SnakeGame
                 timer.Enabled = true;
                 timer.Tick += (send, args) => Invalidate();
                 timer.Start();
-                client = GameClient.Host("Server", new Vector(20, 15), 1);
-                KeyDown += ChangeDirection;
+                client = GameClient.Host("Server", new Vector(20, 15), 2);
                 StartForm.game.isStart = true;
             };
 
             connect.Click += (s, a) =>
             {
                 var timer = new Timer();
-                timer.Interval = 2000;
+                timer.Interval = 50;
                 timer.Enabled = true;
                 timer.Tick += (send, args) => Invalidate();
                 timer.Start();
@@ -108,7 +107,8 @@ namespace SnakeGame
                 if (game.isStart)
                 {
                     Controls.Clear();
-                    state = client.GameState;
+                    if (client != null)
+                        state = client.GameState;
                     var frame = game.GetFrame(state, Height, Width);
                     a.Graphics.DrawImage(frame, new PointF(0,0));
                 }
@@ -129,6 +129,8 @@ namespace SnakeGame
 
         void ChangeDirection(object sender, KeyEventArgs args)
         {
+            if (client == null)
+                return;
             switch(args.KeyCode)
             {
                 case Keys.W:

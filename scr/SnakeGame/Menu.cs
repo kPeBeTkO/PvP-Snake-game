@@ -51,7 +51,7 @@ namespace SnakeGame
                     var port = int.Parse(box.Text.Split(':')[1]);
                     var address = new IPEndPoint(IPAddress.Parse(ip), port);
                     StartForm.game.isStart = true;
-                    client = new GameClient(address);
+                    StartForm.client = GameClient.Connect(address);
                 }
             };
 
@@ -112,7 +112,7 @@ namespace SnakeGame
                 if (PrevHeight2 != Height || PrevWidth2 != Width)
                 {
                     SetControlsSecond(Height, Width);
-                    SetConnectList(Height, Width);
+                    //SetConnectList(Height, Width);
                     PrevWidth2 = Width;
                     PrevHeight2 = Height;
                 }
@@ -147,7 +147,7 @@ namespace SnakeGame
             for (int i = 0; i < invites.Length; i++)
             {
                 var ip = new Button();
-                ip.Text = invites[i].HostName;
+                ip.Text = invites[i].Address;
                 ip.Font = new Font("impact", 40);
                 ip.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
                 ip.FlatStyle = FlatStyle.Flat;
@@ -160,15 +160,15 @@ namespace SnakeGame
                 {
                     WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
                     WMP.controls.play();
-                    var address = new IPEndPoint(IPAddress.Parse(invites[i].Address), invites[i].Port);
-                    client = new GameClient(address);
+                    var address = new IPEndPoint(IPAddress.Parse(invites[0].Address), invites[0].Port);
+                    StartForm.client = GameClient.Connect(address);
                 };
                 invitesButt[i] = ip;
             }
             for (int i = 0; i < invitesButt.Length; i++)
             {
                 controls.Add(invitesButt[i]);
-                StartForm.game.isStart = true;
+                //StartForm.game.isStart = true;
             }
         }
 
