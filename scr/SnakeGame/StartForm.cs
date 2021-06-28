@@ -86,11 +86,12 @@ namespace SnakeGame
                 //WMP.settings.volume = 100;
                 WMP.controls.play();
                 var timer = new Timer();
-                timer.Interval = 2000;
+                timer.Interval = 50;
                 timer.Enabled = true;
                 timer.Tick += (send, args) => Invalidate();
                 timer.Start();
-                client = new GameClient("Server", new Vector(20, 15), 1);
+                client = GameClient.Host("Server", new Vector(20, 15), 1);
+                KeyDown += ChangeDirection;
                 StartForm.game.isStart = true;
             };
 
@@ -127,6 +128,25 @@ namespace SnakeGame
         {
             Icon = new Icon("Textures/icon.ico");
             Text = "PvPSnake";
+        }
+
+        void ChangeDirection(object sender, KeyEventArgs args)
+        {
+            switch(args.KeyCode)
+            {
+                case Keys.W:
+                    client.SnakeDirection = Direction.Down;
+                    break;
+                case Keys.S:
+                    client.SnakeDirection = Direction.Up;
+                    break;
+                case Keys.A:
+                    client.SnakeDirection = Direction.Left;
+                    break;
+                case Keys.D:
+                    client.SnakeDirection = Direction.Right;
+                    break;
+            }
         }
     }
 }

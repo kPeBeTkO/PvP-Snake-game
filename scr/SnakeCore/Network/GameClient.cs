@@ -17,23 +17,37 @@ namespace SnakeCore.Network
     {
         public Direction SnakeDirection;
         private Direction oldDirection;
-        private Messaging messaging;
         public GameStateDto GameState;
         private Messaging server;
 
-        public GameClient(string hostname, Vector mapSize, int playersCount)
+        private GameClient(Messaging server)
+        {
+            this.server = server;
+        }
+
+        public static GameClient Connect(IPEndPoint address)
+        {
+            var server = Messaging.Connect(address);
+            if (server != null)
+            {
+                var client = new GameClient(server);
+                var dispatcher = ThreadDispatcher.GetInstance();
+                dispatcher.AddInQueue(client);
+                return client;
+            }
+            return null;
+        }
+
+        public static GameClient Host(string hostname, Vector mapSize, int playersCount)
         {
             var port = NextFreePort();
             var serverConnection = new GameConnectionServer(hostname, mapSize, playersCount, IPAddress.Any, port);
             var dispatcher = ThreadDispatcher.GetInstance();
             dispatcher.AddInQueue(serverConnection);
-            server = Messaging.Connect(new IPEndPoint(IPAddress.Loopback, port));
-        }
-        public GameClient(IPEndPoint address)
-        {
-            server = Messaging.Connect(address);
-            var dispatcher = ThreadDispatcher.GetInstance();
-            dispatcher.AddInQueue(this);
+            var server = Messaging.Connect(new IPEndPoint(IPAddress.Loopback, port));
+            var client = new GameClient(server);
+            dispatcher.AddInQueue(client);
+            return client;
         }
 
         public override string GetName()

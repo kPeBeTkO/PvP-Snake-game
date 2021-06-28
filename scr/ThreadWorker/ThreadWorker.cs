@@ -16,7 +16,7 @@ namespace ThreadWorker
         public ThreadWorker(Queue<ThreadedTask> queue)
         {
             this.queue = queue;
-            thread = new Thread(Run);
+            thread = new Thread(Run){ IsBackground = true };
             Start();
         }
 

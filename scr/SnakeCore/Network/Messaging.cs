@@ -28,8 +28,12 @@ namespace SnakeCore.Network
             if (!socket.Connected)
                 return null;
             var mes = new Messaging(socket);
-            mes.ConfirmConnection();
-            return mes;
+            if (mes.ConfirmConnection())
+                return mes;
+            else 
+            {
+                return null;
+            }
         }
 
         public void Close()
