@@ -15,17 +15,26 @@ namespace SnakeGame
     public class GameDraw
     {
         private Bitmap field;
-        private Dictionary<Texture, Bitmap>[] snakeTextures = new Dictionary<Texture, Bitmap>[2];
+        private Dictionary<Texture, Bitmap>[] snakeTextures;
         private Dictionary<Texture, Bitmap> itemsTexture = new Dictionary<Texture, Bitmap>();
+        private Bitmap[] scoreTexture;
+        private Color[] snakeColors;
         public bool isStart = false;
 
-        public GameDraw()
+        public void PrepareGame(int snakes)
         {
+            snakeTextures = new Dictionary<Texture, Bitmap>[snakes];
+            scoreTexture = new Bitmap[snakes];
+            snakeColors = new Color[snakes];
+            snakeColors[0] = Color.FromArgb(255, 167, 127);
+            snakeColors[1] = Color.FromArgb(255, 0, 220);
+            snakeColors[2] = Color.FromArgb(89, 94, 237);
             var textureFab = new Resources();
-            Color color1 = Color.FromArgb(255, 167, 127);
-            Color color2 = Color.FromArgb(255, 0, 220);
-            snakeTextures[0] = textureFab.CreateSnakeTextures(color1);
-            snakeTextures[1] = textureFab.CreateSnakeTextures(color2);
+            for (int i = 0; i < snakes; i++)
+            {
+                scoreTexture[i] = textureFab.CreateScoreTexture(snakeColors[i]);
+                snakeTextures[i] = textureFab.CreateSnakeTextures(snakeColors[i]);
+            }
             itemsTexture = textureFab.CreateItemsTextures();
             field = GetField();
         }
@@ -115,7 +124,7 @@ namespace SnakeGame
                         frame = DrawSnake(frame, snake, snakeTextures[0]);
                 frame = DrawItems(frame, state.Items, itemsTexture);
             }
-            return GetBorders(frame, height, width);
+            return GetBorders(frame, height, width, state);
         }
 
         private Bitmap GetField()
@@ -140,15 +149,28 @@ namespace SnakeGame
             return field;
         }
 
-        private Bitmap GetBorders(Bitmap pic, int Height, int Width)
+        private Bitmap GetBorders(Bitmap pic, int Height, int Width, GameDto state)
         {
             var frame = new Bitmap(Width, Height);
             var g = Graphics.FromImage(frame);
             Brush brush1 = new SolidBrush(Color.FromArgb(41, 135, 72));
             g.FillRectangle(brush1, 0, 0, Width, Height);
-            var rectangleSize = Math.Min((Height - Height / 10 - Height / 10) / Program.fieldHeight, Width / Program.fieldWidth);
+            var rectangleSize = Math.Min((Height - Height / 9 - Height / 9) / Program.fieldHeight, Width / Program.fieldWidth);
             var x = (Width - rectangleSize * Program.fieldWidth) / 2;
-            var y = Height / 10;
+            var y = Height / 9;
+            if (state == null)
+            {
+                g.DrawImage(scoreTexture[0], new Point(x, 10));
+                g.DrawString("0", new Font("impact", 40), new SolidBrush(snakeColors[0]), x + scoreTexture[0].Width, 5);
+            }
+            else
+            {
+                for (int i = 0; i < state.Snakes.Length; i++)
+                { 
+                    g.DrawImage(scoreTexture[i], new Point(i * Width / state.Snakes.Length, 10));
+                    g.DrawString((state.Snakes[i].Body.Length - 3).ToString(), new Font("impact", 40), new SolidBrush(snakeColors[i]), x + scoreTexture[i].Width, 5);
+                }
+            }
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             g.DrawImage(pic, new Rectangle(x, y, rectangleSize * Program.fieldWidth, rectangleSize * Program.fieldHeight));
             return frame;

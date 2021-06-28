@@ -20,27 +20,77 @@ namespace SnakeGame
         public WMPLib.WindowsMediaPlayer WMP = new WMPLib.WindowsMediaPlayer();
         private GameClient client;
         private ControlCollection controls;
-        bool secondMenu = false;
+        bool connectMenu = false;
+        bool hostMenu = false;
         private Button back = new Button();
         private TextBox box = new TextBox();
         private Button[] invitesButt;
-        private int PrevHeight1 = 0;
-        private int PrevWidth1 = 0;
-        private int PrevHeight2 = 0;
-        private int PrevWidth2 = 0;
-        private Bitmap MultiplyTexture(String str, int times)
-        {
-            var texture = new Bitmap(str);
-            var bigTexture = new Bitmap(texture.Width * times, texture.Height * times);
-            var g = Graphics.FromImage(bigTexture);
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            g.DrawImage(texture, new Rectangle(0, 0, texture.Width * times, texture.Height * times));
-            return bigTexture;
-        }
+        private int prevHeightMain;
+        private int prevWidthMain;
+        private int prevHeightConnect;
+        private int prevWidthConnect;
+        private int prevHeightHost;
+        private int prevWidthHost;
+        private Label hostNameLabel = new Label();
+        private Label playerCountLabel = new Label();
+        private Label fieldSizeLabel = new Label();
+        private Label fieldX = new Label();
+        private Label fieldY = new Label();
+        private TextBox hostNameBox = new TextBox();
+        private TextBox playerCountBox = new TextBox();
+        private TextBox fieldSizeBox = new TextBox();
+        private TextBox YBox = new TextBox();
+        private TextBox XBox = new TextBox();
+        private Button play = new Button();
+
         public Menu(Button host, Button connect, Label text, ControlCollection control, GameClient client)
         {
             this.client = client;
             controls = control;
+            fieldX.Image = MultiplyTexture("Textures\\X.png", 10);
+            fieldX.BackColor = Color.FromArgb(0, 100, 100, 100);
+
+            fieldY.Image = MultiplyTexture("Textures\\Y.png", 10);
+            fieldY.BackColor = Color.FromArgb(0, 100, 100, 100);
+
+            YBox.Font = new Font("impact", 40);
+            XBox.Font = new Font("impact", 40);
+            hostNameBox.Font = new Font("impact", 40);
+            playerCountBox.Font = new Font("impact", 40);
+            fieldSizeBox.Font = new Font("impact", 40);
+
+            hostNameLabel.Image = MultiplyTexture("Textures\\name.png", 10);
+            hostNameLabel.BackColor = Color.FromArgb(0, 100, 100, 100);
+
+            playerCountLabel.Image = MultiplyTexture("Textures\\snakes.png", 10);
+            playerCountLabel.BackColor = Color.FromArgb(0, 100, 100, 100);
+
+            fieldSizeLabel.Image = MultiplyTexture("Textures\\field.png", 10);
+            fieldSizeLabel.BackColor = Color.FromArgb(0, 100, 100, 100);
+
+            play.Image = MultiplyTexture("Textures\\play.png", 10);
+            play.FlatStyle = FlatStyle.Flat;
+            play.BackColor = Color.FromArgb(0, 100, 100, 100);
+            play.FlatAppearance.BorderSize = 0;
+            play.Location = new Point(30, 30);
+            play.Click += (s, a) =>
+            {
+                var count = 0;
+                var fieldX = 0;
+                var fieldY = 0;
+                if (hostNameBox.Text != null && hostNameBox.Text != "" && int.TryParse(playerCountBox.Text, out count) &&
+                count > 0 && count < 4 && XBox.Text != null && int.TryParse(XBox.Text, out fieldX) &&
+                XBox.Text != null && int.TryParse(XBox.Text, out fieldX) && YBox.Text != null && int.TryParse(YBox.Text, out fieldY)
+                && fieldX < 100 && fieldY < 100 && fieldX > 9 && fieldY > 9)
+                {
+                    WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
+                    WMP.controls.play();
+                    client = GameClient.Host("Server", new Vector(20, 15), 2);
+                    //=================================================================================
+                    StartForm.game.PrepareGame(count);
+                    StartForm.game.isStart = true;
+                }
+            };
 
             box.Font = new Font("impact", 40);
             box.KeyDown += (s, a) =>
@@ -50,6 +100,7 @@ namespace SnakeGame
                     var ip = box.Text.Split(':')[0];
                     var port = int.Parse(box.Text.Split(':')[1]);
                     var address = new IPEndPoint(IPAddress.Parse(ip), port);
+                    StartForm.game.PrepareGame(3);
                     StartForm.game.isStart = true;
                     StartForm.client = GameClient.Connect(address);
                 }
@@ -64,10 +115,13 @@ namespace SnakeGame
             back.Location = new Point(30, 30);
             back.Click += (s, a) =>
             {
-                secondMenu = false;
+                connectMenu = false;
+                hostMenu = false;
                 controls.Clear();
-                PrevWidth1 = 0;
-                PrevHeight1 = 0;
+                prevWidthMain = 0;
+                prevHeightMain = 0;
+                prevWidthHost = 0;
+                prevHeightHost = 0;
             };
 
             var textText = MultiplyTexture("Textures\\title.png", 10);
@@ -76,48 +130,72 @@ namespace SnakeGame
 
             var hostText = MultiplyTexture("Textures\\host.png", 10);
             host.Image = hostText;
-            //host.Size = new Size(Width / 4, Height / 6);
             host.FlatStyle = FlatStyle.Flat;
             host.BackColor = Color.FromArgb(0, 100, 100, 100);
             host.FlatAppearance.BorderSize = 0;
+            host.Click += (s, a) =>
+            {
+                hostMenu = true;
+                controls.Clear();
+                prevWidthConnect = 0;
+                prevHeightConnect = 0;
+            };
 
-            var connectText = MultiplyTexture("Textures\\connect.png", 10);
+                var connectText = MultiplyTexture("Textures\\connect.png", 10);
             connect.Image = connectText;
             connect.FlatStyle = FlatStyle.Flat;
             connect.BackColor = Color.FromArgb(0, 100, 100, 100);
             connect.FlatAppearance.BorderSize = 0;
             connect.Click += (s, a) =>
             {
-                secondMenu = true;
+                connectMenu = true;
                 controls.Clear();
-                PrevWidth2 = 0;
-                PrevHeight2 = 0;
+                prevWidthConnect = 0;
+                prevHeightConnect = 0;
             };
         }
 
         public void DrawMenu(Graphics g, Button host, Button connect, Label text, int Height, int Width)
         {
             DrawBack(g, Height, Width);
-            if (!secondMenu)
+            if (!connectMenu && !hostMenu)
             {
-                if (PrevHeight1 != Height || PrevWidth1 != Width)
+                if (prevHeightMain != Height || prevWidthMain != Width)
                 {
-                    SetControlsFirst(host, connect, text, Height, Width);
-                    PrevWidth1 = Width;
-                    PrevHeight1 = Height;
+                    SetMainControls(host, connect, text, Height, Width);
+                    prevWidthMain = Width;
+                    prevHeightMain = Height;
+                }
+            }
+            else if (connectMenu)
+            {
+                if (prevHeightConnect != Height || prevWidthConnect != Width)
+                {
+                    SetConnectControls(Height, Width);
+                    //SetConnectList(Height, Width);
+                    prevWidthConnect = Width;
+                    prevHeightConnect = Height;
                 }
             }
             else
             {
-                if (PrevHeight2 != Height || PrevWidth2 != Width)
+                if (prevHeightHost != Height || prevWidthHost != Width)
                 {
-                    SetControlsSecond(Height, Width);
-                    //SetConnectList(Height, Width);
-                    PrevWidth2 = Width;
-                    PrevHeight2 = Height;
+                    SetHostSettings(Height, Width);
+                    prevWidthHost = Width;
+                    prevHeightHost = Height;
                 }
             }
+        }
 
+        private Bitmap MultiplyTexture(String str, int times)
+        {
+            var texture = new Bitmap(str);
+            var bigTexture = new Bitmap(texture.Width * times, texture.Height * times);
+            var g = Graphics.FromImage(bigTexture);
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            g.DrawImage(texture, new Rectangle(0, 0, texture.Width * times, texture.Height * times));
+            return bigTexture;
         }
 
         private void SetConnectList(int Height, int Width)
@@ -172,6 +250,50 @@ namespace SnakeGame
             }
         }
 
+        private void SetHostSettings(int Height, int Width)
+        {
+            //back
+            controls.Add(back);
+            //name
+            hostNameLabel.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
+            hostNameLabel.Location = new Point(0, Height / 8);
+            controls.Add(hostNameLabel);
+
+            hostNameBox.Size = new Size(Width / 4, 8 * (Width / 2) / 56);
+            hostNameBox.Location = new Point(Width / 2, (Height / 8) + 15);
+            controls.Add(hostNameBox);
+            //player count
+            playerCountLabel.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
+            playerCountLabel.Location = new Point(0, 5 * Height / 16);
+            controls.Add(playerCountLabel);
+
+            playerCountBox.Size = new Size(Width / 4, 8 * (Width / 2) / 56);
+            playerCountBox.Location = new Point(Width / 2, (5 * Height / 16) + 15);
+            controls.Add(playerCountBox);
+            //field 
+            fieldSizeLabel.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
+            fieldSizeLabel.Location = new Point(0, Height / 2);
+            controls.Add(fieldSizeLabel);
+
+            fieldX.Size = new Size(Width / 20, 8 * (Width / 2) / 58);
+            fieldX.Location = new Point(Width / 2, Height / 2);
+            fieldY.Size = new Size(Width / 20, 8 * (Width / 2) / 58);
+            fieldY.Location = new Point(3 * Width / 4, Height / 2);
+            controls.Add(fieldY);
+            controls.Add(fieldX);
+
+            XBox.Size = new Size(Width / 10, 8 * (Width / 2) / 58);
+            XBox.Location = new Point(Width / 2 + fieldX.Width, Height / 2 + 15);
+            YBox.Size = new Size(Width / 10, 8 * (Width / 2) / 58);
+            YBox.Location = new Point(3 * Width / 4 + fieldY.Width, Height / 2 + 15);
+            controls.Add(XBox);
+            controls.Add(YBox);
+            //play
+            play.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
+            play.Location = new Point(Width / 4, 6 * Height / 8);
+            controls.Add(play);
+        }
+
         private void DrawBack(Graphics g, int Height, int Width)
         {
             var y = 0;
@@ -193,20 +315,20 @@ namespace SnakeGame
             }
         }
 
-        private void SetControlsFirst(Button host, Button connect, Label text, int Height, int Width)
+        private void SetMainControls(Button host, Button connect, Label text, int Height, int Width)
         {
             text.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
-            host.Size = new Size(Width / 2, 8 * (Width / 2) / 32);
+            host.Size = new Size(Width / 2, 8 * (Width / 2) / 55);
             connect.Size = new Size(Width / 2, 8 * (Width / 2) / 55);
             text.Location = new Point(Width / 4, Height / 8);
-            host.Location = new Point(Width / 4, Height / 4);
+            host.Location = new Point(Width / 4, 5 * Height / 16);
             connect.Location = new Point(Width / 4, 2 * Height / 4);
             controls.Add(host);
             controls.Add(connect);
             controls.Add(text);
         }
 
-        private void SetControlsSecond(int Height, int Width)
+        private void SetConnectControls(int Height, int Width)
         {
             box.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
             box.Location = new Point(Width / 4, Height / 8);

@@ -80,9 +80,14 @@ namespace SnakeGame
 
             var menu = new Menu(host, connect, text, Controls, client);
             KeyDown += ChangeDirection;
+            var timer = new Timer();
+            timer.Interval = 50;
+            timer.Enabled = true;
+            timer.Tick += (send, args) => Invalidate();
+            timer.Start();
             host.Click += (s, a) =>
             {
-                WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
+                /*WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
                 //WMP.settings.volume = 100;
                 WMP.controls.play();
                 var timer = new Timer();
@@ -91,17 +96,17 @@ namespace SnakeGame
                 timer.Tick += (send, args) => Invalidate();
                 timer.Start();
                 client = GameClient.Host("Server", new Vector(20, 15), 2);
-                StartForm.game.isStart = true;
+                StartForm.game.isStart = true;*/
             };
 
-            connect.Click += (s, a) =>
+            /*connect.Click += (s, a) =>
             {
                 var timer = new Timer();
                 timer.Interval = 50;
                 timer.Enabled = true;
                 timer.Tick += (send, args) => Invalidate();
                 timer.Start();
-            };
+            };*/
             Paint += (s, a) =>
             {
                 if (game.isStart)
