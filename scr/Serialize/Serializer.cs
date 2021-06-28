@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Serialize
 {
-    public class Serializer
+    public class Serializer : ISerializer
     {
         Dictionary<Type, ICustomSerializer> serializers = new Dictionary<Type, ICustomSerializer>();
 
@@ -107,7 +107,7 @@ namespace Serialize
             return (T)Deserialize(typeof(T), data, 4, size);
         }
 
-        object Deserialize(Type type, byte[] data, int start, int size)
+        public object Deserialize(Type type, byte[] data, int start, int size)
         {
             object obj;
             if (size == 0)
@@ -229,6 +229,11 @@ namespace Serialize
         {
             var type = serializer.GetSerializedType();
             serializers[type] = serializer;
+        }
+
+        public object Deserialize(byte[] data)
+        {
+            throw new NotImplementedException();
         }
     }
 }

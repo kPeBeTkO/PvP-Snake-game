@@ -15,13 +15,29 @@ namespace SnakeCore.Logic
         Random rnd = new Random();
         
         public static int TPS = 20;
-        const int itemsCount = 2;
+        const int itemsCount = 10;
         public Game(Snake[] snakes, Vector mapSize)
         {
             Snakes = snakes;
             MapSize = mapSize;
             for (var i = 0; i < itemsCount; i++)
                 GenerateItem();
+        }
+
+        public static Game GenerateGame(Vector mapSize, int playersCount)
+        {
+            if (mapSize.Y < 5)
+                mapSize = new Vector(mapSize.X, 5);
+            if (mapSize.X / (playersCount + 1) < 2)
+                mapSize = new Vector((playersCount + 1) * 2, mapSize.Y);
+            var snakes = new Snake[playersCount];
+            var headY = mapSize.Y / 2;
+            var ofset = mapSize.X / (playersCount + 1);
+            for (var i = 0; i < playersCount; i++)
+            {
+                snakes[i] = new Snake(new Vector(1 + ofset * i, headY), Direction.Down, 3, mapSize);
+            }
+            return new Game(snakes, mapSize);
         }
 
         public bool Tick()
@@ -74,7 +90,7 @@ namespace SnakeCore.Logic
         public void GenerateItem()
         {
             Item item = null;
-            var rn = rnd.Next(3);
+            var rn = rnd.Next(5);
             var pos = GetFreeSpot();
             switch(rn)
             {
@@ -85,6 +101,12 @@ namespace SnakeCore.Logic
                     item = new Poison(pos);
                     break;
                 case 2:
+                    item = new Boots(pos);
+                    break;
+                case 3:
+                    item = new Apple(pos);
+                    break;
+                case 4:
                     item = new Boots(pos);
                     break;
             }

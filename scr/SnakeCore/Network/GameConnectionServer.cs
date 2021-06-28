@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using ThreadWorker;
 using Serialize;
 using System.Net;
+using SnakeCore.Logic;
 
 namespace SnakeCore.Network
 {
@@ -14,7 +15,6 @@ namespace SnakeCore.Network
         public readonly Socket Server;
         public readonly ThreadDispatcher Dispatcher;
         private volatile bool active = true;
-        private Serializer serializer;
         private LocalConnectionFinder localFinder;
 
         public GameConnectionServer(IPEndPoint addres)
@@ -24,9 +24,6 @@ namespace SnakeCore.Network
             Server.Bind(addres);
             Server.Listen(10);
             
-            serializer = new Serializer();
-            serializer.AddCustom(new VectorSerializer());
-            serializer.AddCustom(new DirectionSerializer());
             localFinder = new LocalConnectionFinder(new Dto.InviteDto("Hi!", addres.Port));
             Dispatcher.AddInQueue(localFinder);
             Dispatcher.AddInQueue(this);
@@ -43,16 +40,22 @@ namespace SnakeCore.Network
             while (active)
             {
                 Socket handler = null;
-                try{handler = Server.Accept();}
+                try
+                {
+                    handler = Server.Accept();
+                }
                 catch{}
                 if (handler != null)
                 {
-                    var player = new Messaging(handler, serializer);
+                    var player = new Messaging(handler);
                     if(player.IsConnected())
                         connectedPlayers.Enqueue(player);
+                    else
+                        handler.Close();
                     if (connectedPlayers.Count > 1)
                     {
-                        Dispatcher.AddInQueue(new GameServer(connectedPlayers.Dequeue(), connectedPlayers.Dequeue()));
+                        var game = Game.GenerateGame(new Vector(20, 15), 2);
+                        Dispatcher.AddInQueue(new GameServer( new Messaging[]{connectedPlayers.Dequeue(), connectedPlayers.Dequeue() }, game));
                     }
                 }
             }

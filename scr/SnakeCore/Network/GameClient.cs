@@ -18,10 +18,7 @@ namespace SnakeCore.Network
         public GameStateDto GameState;
         public GameClient(IPEndPoint address)
         {
-            var serializer = new Serializer();
-            serializer.AddCustom(new VectorSerializer());
-            serializer.AddCustom(new DirectionSerializer());
-            messaging = Messaging.Connect(address, serializer);
+            messaging = Messaging.Connect(address);
         }
 
         public override string GetName()

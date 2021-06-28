@@ -10,19 +10,19 @@ namespace Serialize
 {
     public class DataTransferHandler
     {
-        public Serializer serializer;
+        public ISerializer serializer;
         readonly MD5 md5 = MD5.Create();
         readonly Socket handler;
         readonly byte[] preamble = new byte[] { 1, 1, 0, 1, 0, 1, 0, 0 };
 
-        public DataTransferHandler(Socket handler, Serializer serializer)
+        public DataTransferHandler(Socket handler, ISerializer serializer)
         {
             this.handler = handler;
             this.serializer = serializer;
             handler.NoDelay = true;
         }
 
-        public static DataTransferHandler Connect(IPEndPoint addres, Serializer serializer)
+        public static DataTransferHandler Connect(IPEndPoint addres, ISerializer serializer)
         {
             var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
             socket.Connect(addres);
@@ -52,14 +52,7 @@ namespace Serialize
             return true;
         }
 
-        public Result<T> TryRecieve<T>()
-        {
-            if (handler.Available > 0)
-                return Result.Ok(Recieve<T>());
-            return Result.Fail<T>();
-        }
-
-        public T Recieve<T>()
+        byte[] RecieveData()
         {
             var received = new byte[preamble.Length];
             handler.Receive(received);
@@ -82,7 +75,53 @@ namespace Serialize
                 throw new Exception("Transmission error");
 
             var data = Zip.Decompress(zipData);
+            return data;
+        }
+
+        public Result<T> TryRecieve<T>()
+        {
+            if (handler.Available > 0)
+            {
+                try
+                {
+                    return Result.Ok(Recieve<T>());
+                }
+                catch
+                {
+                    handler.Receive(new byte[handler.Available]);
+                    return Result.Fail<T>();
+                }
+            }
+            return Result.Fail<T>();
+        }
+
+        public T Recieve<T>()
+        {
+            var data = RecieveData();
             return serializer.Deserialize<T>(data);
+        }
+
+        public Result<object> TryRecieve()
+        {
+            if (handler.Available > 0)
+            { 
+                try
+                {
+                    return Result.Ok(Recieve());
+                }
+                catch
+                {
+                    handler.Receive(new byte[handler.Available]);
+                    return Result.Fail<object>();
+                }
+            }
+            return Result.Fail<object>();
+        }
+
+        public object Recieve()
+        {
+            var data = RecieveData();
+            return serializer.Deserialize(data);
         }
 
         public byte[] Encode(object obj)

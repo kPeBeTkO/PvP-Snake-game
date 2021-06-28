@@ -12,18 +12,15 @@ namespace SnakeCore.Network
     {
         Messaging messaging;
         Game game;
-        Snake player; 
-        Snake enemy;
-        Queue<GameChangeEvent> queue;
+        int playerId;
         public volatile bool GameUpdated = true;
         public volatile bool Active = true;
-        public PlayerHandler(Messaging messaging, Queue<GameChangeEvent> queue, Game game, Snake player, Snake enemy)
+
+        public PlayerHandler(Messaging messaging, Game game, int playerId)
         {
             this.messaging = messaging;
-            this.queue = queue;
             this.game = game;
-            this.player = player;
-            this.enemy = enemy;
+            this.playerId = playerId;
         }
 
         public override string GetName()
@@ -35,15 +32,36 @@ namespace SnakeCore.Network
         {
             while(Active)
             {
-                var res = messaging.GetPlayerDirection();
-                if (res.Success)
+                if ( messaging.ReciveAll())
                 {
-                    player.ChangeDirection(res.Value);
+                    ProccessInput();
                 }
-                if (GameUpdated)
+                if (Active && GameUpdated)
                 {
                     GameUpdated = false;
-                    messaging.SendGameState(GetDto());
+                    Active = messaging.Send(GameStateDto.Convert(game));
+                }
+            }
+            messaging.Close();
+        }
+
+        private void ProccessInput()
+        {
+            while (messaging.Messages.Count > 0)
+            {
+                var mes = messaging.Messages.Dequeue();
+                if (mes == "Disconnect")
+                {
+                    Stop();
+                    return;
+                }
+            }
+            while (messaging.Data.Count > 0)
+            {
+                var data = messaging.Data.Dequeue();
+                if (data is Direction dir)
+                {
+                    game.Snakes[playerId].ChangeDirection(dir);
                 }
             }
         }
@@ -52,18 +70,6 @@ namespace SnakeCore.Network
         {
             Active = false;
             messaging.Close();
-        }
-
-        
-        private GameStateDto GetDto()
-        {
-            return new GameStateDto()
-            {
-                Player = player.Body.ToArray(),
-                Enemy = enemy.Body.ToArray(),
-                Items = game.Items.Select(i => ItemDto.Convert(i)).ToArray(),
-                PlayerDirection = player.Direction
-            };
         }
     }
 }
