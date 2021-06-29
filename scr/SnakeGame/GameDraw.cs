@@ -31,12 +31,12 @@ namespace SnakeGame
             scoreTexture = new Bitmap[snakes];
             snakeColors = new Color[3];
             snakeColors[0] = Color.FromArgb(255, 167, 127);
-            snakeColors[1] = Color.FromArgb(255, 0, 220);
-            snakeColors[2] = Color.FromArgb(89, 94, 237);
+            snakeColors[2] = Color.FromArgb(255, 0, 220);
+            snakeColors[1] = Color.FromArgb(89, 94, 237);
             var textureFab = new Resources();
             for (int i = 0; i < snakes; i++)
             {
-                scoreTexture[i] = textureFab.CreateScoreTexture(snakeColors[i]);
+                scoreTexture[i] = textureFab.CreateScoreTexture(snakeColors[i], 7);
                 snakeTextures[i] = textureFab.CreateSnakeTextures(snakeColors[i]);
             }
             itemsTexture = textureFab.CreateItemsTextures();
@@ -53,7 +53,7 @@ namespace SnakeGame
             var texture = Texture.Apple;
             if (prev.Y == next.Y && (prev.X - 1 + fieldWidth) % fieldWidth == next.X)
                 texture = Texture.HeadRight;
-            else if (prev.Y == next.Y && (prev.X + 1) %fieldWidth == next.X)
+            else if (prev.Y == next.Y && (prev.X + 1) % fieldWidth == next.X)
                 texture = Texture.HeadLeft;
             else if ((prev.Y - 1 + fieldHeight) % fieldHeight == next.Y && prev.X == next.X)
                 texture = Texture.HeadDown;

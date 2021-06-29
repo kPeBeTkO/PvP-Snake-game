@@ -86,6 +86,7 @@ namespace SnakeCore.Network
                 }
             }
             localFinder.Stop();
+            Stop();
         }
 
         public void Stop()

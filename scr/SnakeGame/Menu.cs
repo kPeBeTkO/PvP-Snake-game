@@ -30,11 +30,16 @@ namespace SnakeGame
         private int prevWidthConnect;
         private int prevHeightHost;
         private int prevWidthHost;
+        private int prevHeightEnd;
+        private int prevWidthEnd;
         private Label hostNameLabel = new Label();
         private Label playerCountLabel = new Label();
         private Label fieldSizeLabel = new Label();
         private Label fieldX = new Label();
         private Label fieldY = new Label();
+        private Label endGame = new Label();
+        private Label score1 = new Label();
+        private Label score2 = new Label();
         private TextBox hostNameBox = new TextBox();
         private TextBox playerCountBox = new TextBox();
         private TextBox fieldSizeBox = new TextBox();
@@ -45,6 +50,15 @@ namespace SnakeGame
         public Menu(Button host, Button connect, Label text, ControlCollection control)
         {
             controls = control;
+
+            var resFab = new Resources();
+            score1.Image = resFab.CreateScoreTexture(Color.FromArgb(255, 167, 127), 10);
+            score2.Image = resFab.CreateScoreTexture(Color.FromArgb(89, 94, 237), 10);
+            score1.BackColor = Color.FromArgb(0, 100, 100, 100);
+            score2.BackColor = Color.FromArgb(0, 100, 100, 100);
+
+            endGame.BackColor = Color.FromArgb(0, 100, 100, 100);
+
             fieldX.Image = MultiplyTexture("Textures\\X.png", 10);
             fieldX.BackColor = Color.FromArgb(0, 100, 100, 100);
 
@@ -127,6 +141,9 @@ namespace SnakeGame
                 prevHeightMain = 0;
                 prevWidthHost = 0;
                 prevHeightHost = 0;
+                prevWidthEnd = 0;
+                prevHeightEnd = 0;
+                StartForm.game.isStart = false;
             };
 
             var textText = MultiplyTexture("Textures\\title.png", 10);
@@ -245,6 +262,41 @@ namespace SnakeGame
             {
                 controls.Add(invitesButt[i]);
             }
+        }
+
+        public void DrawEndMenu(Graphics g, int Height, int Width, GameState state, GameDto game)
+        {
+            DrawBack(g, Height, Width);
+            if (prevHeightEnd != Height || prevWidthEnd != Width)
+            {
+                if (state == GameState.Lose)
+                {
+                    endGame.Image = MultiplyTexture("Textures\\lose.png", 10);
+                }
+                else
+                {
+                    endGame.Image = MultiplyTexture("Textures\\win.png", 10);
+                }
+                endGame.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
+                endGame.Location = new Point(Width / 4, Height / 8);
+                if (game.Snakes.Length == 2)
+                {
+                    score2.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
+                    score2.Location = new Point(Width / 4, Height / 2);
+                    g.DrawString((game.Snakes[0].Body.Length - 3).ToString(), new Font("impact", 60), new SolidBrush(Color.FromArgb(89, 94, 237)),
+                        Width / 4 + score1.Width, Height / 2);
+                    controls.Add(score2);
+                }
+                score1.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
+                score1.Location = new Point(Width / 4, 5 * Height / 16);
+                g.DrawString((game.Snakes[0].Body.Length - 3).ToString(), new Font("impact", 60), new SolidBrush(Color.FromArgb(255, 167, 127)),
+                        Width / 4 + score1.Width, 5 * Height / 16);
+                controls.Add(score1);
+                prevHeightEnd = Height;
+                prevWidthEnd = Width;
+            }
+            controls.Add(endGame);
+            controls.Add(back);
         }
 
         private void SetHostSettings(int Height, int Width)

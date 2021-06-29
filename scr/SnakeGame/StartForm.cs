@@ -111,11 +111,18 @@ namespace SnakeGame
             {
                 if (game.isStart)
                 {
-                    Controls.Clear();
-                    if (client != null)
-                        state = client.GameState;
-                    var frame = game.GetFrame(state, Height, Width);
-                    a.Graphics.DrawImage(frame, new PointF(0,0));
+                    if (client.GameState != null && client.GameState.State == GameState.Ended)
+                    {
+                        menu.DrawEndMenu(a.Graphics, Height, Width, client.IsVictory(), client.GameState);
+                    }
+                    else
+                    {
+                        Controls.Clear();
+                        if (client != null)
+                            state = client.GameState;
+                        var frame = game.GetFrame(state, Height, Width);
+                        a.Graphics.DrawImage(frame, new PointF(0, 0));
+                    }
                 }
                 else
                 {
