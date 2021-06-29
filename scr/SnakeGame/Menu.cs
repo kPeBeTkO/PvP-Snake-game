@@ -292,7 +292,7 @@ namespace SnakeGame
                     score2.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
                     score2.Location = new Point(Width / 4, Height / 2);
                     score2count.Size = new Size(Width / 8, 8 * (Width / 2) / 58);
-                    score2count.Location = new Point(5 * Width / 8, 8 * (Width / 2) / 58);
+                    score2count.Location = new Point(6 * Width / 8, Height / 2);
                     score2count.Text = (game.Snakes[1].Body.Length - 3).ToString();
                     controls.Add(score2);
                     controls.Add(score2count);
@@ -300,7 +300,7 @@ namespace SnakeGame
                 score1.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
                 score1.Location = new Point(Width / 4, 5 * Height / 16);
                 score1count.Size = new Size(Width / 8, 8 * (Width / 2) / 58);
-                score1count.Location = new Point(5 * Width/8, 5 * Height / 16);
+                score1count.Location = new Point(6 * Width/8, 5 * Height / 16);
                 score1count.Text = (game.Snakes[0].Body.Length - 3).ToString();
                 controls.Add(score1);
                 controls.Add(score1count);
