@@ -9,6 +9,8 @@ namespace SnakeCore.Logic
         Unknown,
         WaitingPlayers,
         Running,
-        Ended
+        Ended,
+        Victory,
+        Lose
     }
 }

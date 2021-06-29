@@ -77,20 +77,20 @@ namespace SnakeGame
         public StartForm()
         {
             DoubleBuffered = true;
-
+            GameClient.Updated += () => Invalidate();
             var menu = new Menu(host, connect, text, Controls, client);
             KeyDown += ChangeDirection;
             var timer = new Timer();
-            timer.Interval = 50;
+            /*timer.Interval = 50;
             timer.Enabled = true;
             timer.Tick += (send, args) => Invalidate();
-            timer.Start();
+            timer.Start();*/
             host.Click += (s, a) =>
             {
                 /*WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
                 //WMP.settings.volume = 100;
                 WMP.controls.play();
-                var timer = new Timer();
+                var timer = new Timer();/*
                 timer.Interval = 50;
                 timer.Enabled = true;
                 timer.Tick += (send, args) => Invalidate();

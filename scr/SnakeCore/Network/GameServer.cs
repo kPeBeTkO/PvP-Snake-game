@@ -54,6 +54,8 @@ namespace SnakeCore.Network
                                 handler.GameUpdated = true;
                             else
                                 Active = false;
+                    if (game.State == GameState.Ended)
+                        Active = false;
                 }
             }
             foreach(var handler in handlers)

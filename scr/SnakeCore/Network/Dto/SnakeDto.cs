@@ -11,13 +11,15 @@ namespace SnakeCore.Network.Dto
         public Vector[] Body;
         public double Speed;
         public Direction Direction;
+        public bool Alive;
         public static SnakeDto Convert(Snake snake)
         {
             return new SnakeDto()
             {
                 Body = snake.Body.ToArray(),
                 Speed = snake.Speed,
-                Direction = snake.Direction
+                Direction = snake.Direction,
+                Alive = snake.Alive
             };
         }
     }

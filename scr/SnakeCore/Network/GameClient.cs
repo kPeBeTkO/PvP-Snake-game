@@ -19,7 +19,11 @@ namespace SnakeCore.Network
         private Direction oldDirection;
         public GameDto GameState;
         private Messaging server;
+        public bool Active {get; private set;} = true;
         public readonly Vector MapSize;
+        public readonly int PlayersCount;
+
+        public static event Action Updated;
 
         private GameClient(Messaging server)
         {
@@ -27,9 +31,10 @@ namespace SnakeCore.Network
             while (true)
             {
                 server.ReciveAll();
-                if (server.Data.Count > 0)
+                if (server.Data.Count > 1)
                 {
                     MapSize = (Vector)server.Data.Dequeue();
+                    PlayersCount = (int)server.Data.Dequeue();
                     break;
                 }
             }
@@ -50,8 +55,8 @@ namespace SnakeCore.Network
 
         public static GameClient Host(string hostname, Vector mapSize, int playersCount)
         {
-            var port = NextFreePort();
-            port = 9000;
+            //var port = NextFreePort();
+            var port = 9000;
             var serverConnection = new GameConnectionServer(hostname, mapSize, playersCount, IPAddress.Any, port);
             var dispatcher = ThreadDispatcher.GetInstance();
             dispatcher.AddInQueue(serverConnection);
@@ -68,13 +73,29 @@ namespace SnakeCore.Network
 
         public override void Run()
         {
-            while(true)
+            while(Active)
             {
                 var updated = server.ReciveAll();
                 if (updated)
                 {
                     while(server.Data.Count > 0)
-                        GameState = (GameDto)server.Data.Dequeue();
+                    {
+                        var obj = server.Data.Dequeue();
+                        if (obj is GameDto game)
+                            GameState = game;
+                        Updated.Invoke();
+                    }
+                    while(server.Messages.Count > 0)
+                    {
+                        var mes = server.Messages.Dequeue();
+                        if (mes == "Disconnect")
+                        {
+                            server.Close();
+                            Active = false;
+                            break;
+                        }
+
+                    }
                     oldDirection = GameState.Snakes[GameState.PlayerId].Direction;
                 }
                 if (SnakeDirection != oldDirection)
@@ -83,6 +104,16 @@ namespace SnakeCore.Network
                     server.Send(oldDirection);
                 }
             }
+        }
+
+        public GameState IsVictory()
+        {
+            if (GameState == null || GameState.State != Logic.GameState.Ended)
+                return Logic.GameState.Unknown;
+            var maxPoints = GameState.Snakes.Max(s => s.Body.Length);
+            if (GameState.Snakes[GameState.PlayerId].Body.Length == maxPoints)
+                return Logic.GameState.Victory;
+            return Logic.GameState.Lose;
         }
 
         static bool IsFree(int port)

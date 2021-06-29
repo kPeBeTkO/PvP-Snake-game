@@ -65,6 +65,7 @@ namespace SnakeCore.Network
                     if(player.IsConnected())
                     {
                         player.Send(mapSize);
+                        player.Send(playersCount);
                         connectedPlayers.Enqueue(player);
                         players++;
                     }

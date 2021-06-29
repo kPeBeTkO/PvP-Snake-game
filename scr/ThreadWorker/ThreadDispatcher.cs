@@ -28,7 +28,12 @@ namespace ThreadWorker
         {
             workersManager = new ThreadWorkerManager(maxPoolSize, taskQueue, workers);
             AddInQueue(workersManager);
-            //AddInQueue(new ThreadMonitor(workers));
+            try
+            {
+                Console.Clear();
+                AddInQueue(new ThreadMonitor(workers));
+            }
+            catch{ }
         }
 
         public static ThreadDispatcher GetInstance()

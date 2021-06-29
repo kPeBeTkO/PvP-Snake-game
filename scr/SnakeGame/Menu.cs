@@ -85,7 +85,8 @@ namespace SnakeGame
                 {
                     WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
                     WMP.controls.play();
-                    client = GameClient.Host("Server", new Vector(20, 15), 2);
+                    StartForm.client = GameClient.Host("Server", new Vector(fieldX, fieldY), count);
+                    
                     //=================================================================================
                     StartForm.game.PrepareGame(count);
                     StartForm.game.isStart = true;
@@ -100,7 +101,7 @@ namespace SnakeGame
                     var ip = box.Text.Split(':')[0];
                     var port = int.Parse(box.Text.Split(':')[1]);
                     var address = new IPEndPoint(IPAddress.Parse(ip), port);
-                    StartForm.game.PrepareGame(3);
+                    StartForm.game.PrepareGame(2);
                     StartForm.game.isStart = true;
                     StartForm.client = GameClient.Connect(address);
                 }

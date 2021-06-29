@@ -25,7 +25,7 @@ namespace SnakeGame
         {
             snakeTextures = new Dictionary<Texture, Bitmap>[snakes];
             scoreTexture = new Bitmap[snakes];
-            snakeColors = new Color[snakes];
+            snakeColors = new Color[3];
             snakeColors[0] = Color.FromArgb(255, 167, 127);
             snakeColors[1] = Color.FromArgb(255, 0, 220);
             snakeColors[2] = Color.FromArgb(89, 94, 237);
@@ -120,8 +120,8 @@ namespace SnakeGame
             if (state != null)
             {
                 if (state.Snakes != null)
-                    foreach(var snake in state.Snakes)
-                        frame = DrawSnake(frame, snake, snakeTextures[0]);
+                    for(var i = 0; i < state.Snakes.Length; i++)
+                        frame = DrawSnake(frame, state.Snakes[i], snakeTextures[i]);
                 frame = DrawItems(frame, state.Items, itemsTexture);
             }
             return GetBorders(frame, height, width, state);
@@ -167,8 +167,9 @@ namespace SnakeGame
             {
                 for (int i = 0; i < state.Snakes.Length; i++)
                 { 
-                    g.DrawImage(scoreTexture[i], new Point(i * Width / state.Snakes.Length, 10));
-                    g.DrawString((state.Snakes[i].Body.Length - 3).ToString(), new Font("impact", 40), new SolidBrush(snakeColors[i]), x + scoreTexture[i].Width, 5);
+                    g.DrawImage(scoreTexture[i], new Point(x +  i * Width / state.Snakes.Length, 10));
+                    g.DrawString((state.Snakes[i].Body.Length - 3).ToString(), new Font("impact", 40), new SolidBrush(snakeColors[i]),
+                        x + scoreTexture[i].Width + i * Width / state.Snakes.Length, 5);
                 }
             }
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;

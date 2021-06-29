@@ -11,11 +11,11 @@ namespace SnakeCore.Logic
         public readonly Snake[] Snakes;
         public readonly Vector MapSize;
         public readonly List<Item> Items = new List<Item>();
-
+        public GameState State {get; set;} = GameState.Running;
         Random rnd = new Random();
         
         public static int TPS = 20;
-        const int itemsCount = 10;
+        const int itemsCount = 5;
         public Game(Snake[] snakes, Vector mapSize)
         {
             Snakes = snakes;
@@ -42,6 +42,8 @@ namespace SnakeCore.Logic
 
         public bool Tick()
         {
+            if (State == GameState.Ended)
+                return false;
             var changed = false;
             foreach(var snake in Snakes)
                 changed = changed || snake.Tick();
@@ -54,6 +56,7 @@ namespace SnakeCore.Logic
                 changed = true;
             }
             CheckAllCollisions();
+            changed |= IsGameEnded();
             return changed;
         }
 
@@ -76,7 +79,7 @@ namespace SnakeCore.Logic
                     if (item.OnEnemy)
                     {
                         var othre =  GetOther(snake);
-                       if (othre != null) othre.Consume(item);
+                        if (othre != null) othre.Consume(item);
                     }
                     else
                         snake.Consume(item);
@@ -85,15 +88,40 @@ namespace SnakeCore.Logic
 
         }
 
+        public bool IsGameEnded()
+        {
+            var alive = Snakes.Count(s => s.Alive);
+            if (alive == 0)
+                State = GameState.Ended;
+            else if (alive == 1 && Snakes.Length > 1)
+            {
+                var snake = Snakes.First(s => s.Alive);
+                if (Snakes.All(s => s.Body.Count < snake.Body.Count || s == snake))
+                    State = GameState.Ended;
+            }
+            return State == GameState.Ended;
+        }
+
         public Snake GetOther(Snake snake)
         {
-            return Snakes.First(s => !(s.Equals(snake)));
+            if (Snakes.Count(s => s.Alive && s != snake) > 0)
+                while(true)
+                {
+                    var i = rnd.Next(Snakes.Length);
+                    if (Snakes[i] != snake && Snakes[i].Alive)
+                        return Snakes[i];
+                }
+            return null;
         }
 
         public void GenerateItem()
         {
             Item item = null;
-            var rn = rnd.Next(5);
+            int rn;
+            if (Snakes.Length > 1)
+                 rn = rnd.Next(5);
+            else
+                rn = rnd.Next(4);
             var pos = GetFreeSpot();
             switch(rn)
             {
@@ -107,10 +135,10 @@ namespace SnakeCore.Logic
                     item = new Boots(pos);
                     break;
                 case 3:
-                    item = new Apple(pos);
+                    item = new Boots(pos);
                     break;
                 case 4:
-                    item = new Boots(pos);
+                    item = new Apple(pos);
                     break;
             }
             Items.Add(item);
