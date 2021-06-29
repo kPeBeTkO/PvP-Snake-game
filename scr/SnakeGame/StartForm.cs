@@ -15,9 +15,9 @@ namespace SnakeGame
 {
     public partial class StartForm : Form
     {
-        public GameClient client;
+        public static GameClient client;
         public WMPLib.WindowsMediaPlayer WMP = new WMPLib.WindowsMediaPlayer();
-        private GameStateDto state = new GameStateDto();
+        private GameDto state;
         private Button host = new Button();
         private Button connect = new Button();
         private Label text = new Label();
@@ -25,9 +25,9 @@ namespace SnakeGame
         static public Brush brush2 = new SolidBrush(Color.FromArgb(92, 188, 90));
         static public GameDraw game = new GameDraw();
 
-        private GameStateDto GetSnake()
+        private GameDto GetSnake()
         {
-            var state = new GameStateDto();
+            var state = new GameDto();
             var snake = new List<Vector>();
             var r = new Random();
             var v = r.Next(3, 10);
@@ -77,43 +77,52 @@ namespace SnakeGame
         public StartForm()
         {
             DoubleBuffered = true;
-
-            var menu = new Menu(host, connect, text, Height, Width, Controls);
-
+            GameClient.Updated += () => Invalidate();
+            var menu = new Menu(host, connect, text, Controls);
+            KeyDown += ChangeDirection;
+            var timer = new Timer();
+            /*timer.Interval = 50;
+            timer.Enabled = true;
+            timer.Tick += (send, args) => Invalidate();
+            timer.Start();*/
             host.Click += (s, a) =>
             {
-                WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
+                /*WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
                 //WMP.settings.volume = 100;
                 WMP.controls.play();
+                var timer = new Timer();/*
+                timer.Interval = 50;
+                timer.Enabled = true;
+                timer.Tick += (send, args) => Invalidate();
+                timer.Start();
+                client = GameClient.Host("Server", new Vector(20, 15), 2);
+                StartForm.game.isStart = true;*/
+            };
+
+            /*connect.Click += (s, a) =>
+            {
                 var timer = new Timer();
                 timer.Interval = 50;
                 timer.Enabled = true;
                 timer.Tick += (send, args) => Invalidate();
                 timer.Start();
-                client = GameClient.Host("Server", new Vector(20, 15), 1);
-                KeyDown += ChangeDirection;
-                StartForm.game.isStart = true;
-            };
-
-            connect.Click += (s, a) =>
-            {
-                WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
-                //WMP.settings.volume = 100;
-                WMP.controls.play();
-                var timer = new Timer();
-                timer.Interval = 2000;
-                timer.Enabled = true;
-                timer.Tick += (send, args) => Invalidate();
-                timer.Start();
-            };
+            };*/
             Paint += (s, a) =>
             {
                 if (game.isStart)
                 {
-                    Controls.Clear();
-                    state = client.GameState;
-                    var frame = game.GetFrame(state, Height, Width);
-                    a.Graphics.DrawImage(frame, new PointF(0,0));
+                    if (client.GameState != null && client.GameState.State == GameState.Ended)
+                    {
+                        menu.DrawEndMenu(a.Graphics, Height, Width, client.IsVictory(), client.GameState);
+                    }
+                    else
+                    {
+                        Controls.Clear();
+                        if (client != null)
+                            state = client.GameState;
+                        var frame = game.GetFrame(state, Height, Width);
+                        a.Graphics.DrawImage(frame, new PointF(0, 0));
+                    }
                 }
                 else
                 {
@@ -132,6 +141,8 @@ namespace SnakeGame
 
         void ChangeDirection(object sender, KeyEventArgs args)
         {
+            if (client == null)
+                return;
             switch(args.KeyCode)
             {
                 case Keys.W:

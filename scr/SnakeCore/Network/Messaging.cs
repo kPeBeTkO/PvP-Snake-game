@@ -93,7 +93,7 @@ namespace SnakeCore.Network
             return messaging.TrySend(obj);
         }
 
-        public bool SendGameState(GameStateDto gameState)
+        public bool SendGameState(GameDto gameState)
         {
             messaging.Send("GameState");
             messaging.Send(gameState);
@@ -103,16 +103,16 @@ namespace SnakeCore.Network
             return false;
         }
 
-        public Result<GameStateDto> GetGameState()
+        public Result<GameDto> GetGameState()
         {
             var ans = messaging.TryRecieve<string>();
             if (ans.Success && ans.Value == "GameState")
             {
-                var gameState = messaging.Recieve<GameStateDto>();
+                var gameState = messaging.Recieve<GameDto>();
                 messaging.Send("Ok");
                 return Result.Ok(gameState);
             }
-            return Result.Fail<GameStateDto>();
+            return Result.Fail<GameDto>();
         }
         
         public bool SendDirection(Direction currentDir)

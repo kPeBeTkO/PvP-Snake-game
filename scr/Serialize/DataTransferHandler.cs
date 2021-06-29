@@ -103,7 +103,7 @@ namespace Serialize
 
         public Result<object> TryRecieve()
         {
-            if (handler.Available > 0)
+            if (handler.Connected && handler.Available > 0)
             { 
                 try
                 {

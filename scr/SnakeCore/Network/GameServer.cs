@@ -23,7 +23,9 @@ namespace SnakeCore.Network
                 throw new Exception("too much players");
             handlers = new PlayerHandler[players.Length];
             for (var i = 0; i < players.Length; i++)
+            {
                 handlers[i] =  new PlayerHandler(players[i],  game, i);
+            }
             var disp = ThreadDispatcher.GetInstance();
             foreach(var h in handlers)
                 disp.AddInQueue(h);
@@ -49,9 +51,11 @@ namespace SnakeCore.Network
                     if (changed)
                         foreach(var handler in handlers)
                             if (handler.Active)
-                                handler.GameUpdated = true;
+                                handler.GameUpdated();
                             else
                                 Active = false;
+                    if (game.State == GameState.Ended)
+                        Active = false;
                 }
             }
             foreach(var handler in handlers)

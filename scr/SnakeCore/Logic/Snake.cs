@@ -13,9 +13,11 @@ namespace SnakeCore.Logic
         public LinkedList<Vector> Body {get; private set;}
         public int TicksPassed {get; private set; } = 0;
         public double Speed { get; private set; } = 2.5;
-        public int Points => Body.Count;
+        public int Points => Body.Count + tailsToGrow;
         public readonly Vector MapSize;
         public List<Item> ActiveItems = new List<Item>();
+        private Vector lastTail;
+        private int tailsToGrow;
 
         public Snake(Vector head, Direction tailDirection, int length, Vector mapSize)
         {
@@ -39,7 +41,11 @@ namespace SnakeCore.Logic
         public void Move()
         {
             Body.AddFirst(Head.AddOnRing(Vector.GetVector(Direction), MapSize));
-            Body.RemoveLast();
+            lastTail = Body.Last.Value;
+            if (tailsToGrow == 0)
+                Body.RemoveLast();
+            else
+                tailsToGrow--;
         }
 
         public void Consume(Item item)
@@ -75,6 +81,8 @@ namespace SnakeCore.Logic
         {
             Alive = false;
             Speed = 0;
+            Body.AddLast(lastTail);
+            Body.RemoveFirst();
         }
 
         public bool Tick()
@@ -109,7 +117,7 @@ namespace SnakeCore.Logic
             while(newSize < Points)
                 Body.RemoveLast();
             while(newSize > Points)
-                Body.AddLast(Body.Last.Value);
+                tailsToGrow += Points - newSize;
         }
     }
 }

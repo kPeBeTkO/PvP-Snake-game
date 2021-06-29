@@ -75,6 +75,16 @@ namespace SnakeGame
             return textures;
         }
 
+        public Bitmap CreateScoreTexture(Color color, int multiply)
+        {
+            var score = Paint(new Bitmap("Textures\\score.png"), color);
+            var bigScore = new Bitmap(score.Width * multiply, score.Height * multiply);
+            var g = Graphics.FromImage(bigScore);
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+            g.DrawImage(score, new Rectangle(0, 0, score.Width * multiply, score.Height * multiply));
+            return bigScore;
+        }
+
         public Dictionary<Texture, Bitmap> CreateItemsTextures()
         {
             var apple = new Bitmap("Textures\\apple.png");
