@@ -88,7 +88,7 @@ namespace SnakeGame
                     StartForm.client = GameClient.Host("Server", new Vector(fieldX, fieldY), count);
                     
                     //=================================================================================
-                    StartForm.game.PrepareGame(count);
+                    StartForm.game.PrepareGame(count, fieldY, fieldX);
                     StartForm.game.isStart = true;
                 }
             };
@@ -101,7 +101,7 @@ namespace SnakeGame
                     var ip = box.Text.Split(':')[0];
                     var port = int.Parse(box.Text.Split(':')[1]);
                     var address = new IPEndPoint(IPAddress.Parse(ip), port);
-                    StartForm.game.PrepareGame(2);
+                    StartForm.game.PrepareGame(2, 15, 20);
                     StartForm.game.isStart = true;
                     StartForm.client = GameClient.Connect(address);
                 }

@@ -19,10 +19,14 @@ namespace SnakeGame
         private Dictionary<Texture, Bitmap> itemsTexture = new Dictionary<Texture, Bitmap>();
         private Bitmap[] scoreTexture;
         private Color[] snakeColors;
+        private int fieldHeight;
+        private int fieldWidth;
         public bool isStart = false;
 
-        public void PrepareGame(int snakes)
+        public void PrepareGame(int snakes, int height, int width)
         {
+            this.fieldHeight = height;
+            this.fieldWidth = width;
             snakeTextures = new Dictionary<Texture, Bitmap>[snakes];
             scoreTexture = new Bitmap[snakes];
             snakeColors = new Color[3];
@@ -47,13 +51,13 @@ namespace SnakeGame
             var prev = new Point(snake.Body[0].X, snake.Body[0].Y);
             var next = new Point(snake.Body[1].X, snake.Body[1].Y);
             var texture = Texture.Apple;
-            if (prev.Y == next.Y && (prev.X - 1 + Program.fieldWidth) % Program.fieldWidth == next.X)
+            if (prev.Y == next.Y && (prev.X - 1 + fieldWidth) % fieldWidth == next.X)
                 texture = Texture.HeadRight;
-            else if (prev.Y == next.Y && (prev.X + 1) % Program.fieldWidth == next.X)
+            else if (prev.Y == next.Y && (prev.X + 1) %fieldWidth == next.X)
                 texture = Texture.HeadLeft;
-            else if ((prev.Y - 1 + Program.fieldHeight) % Program.fieldHeight == next.Y && prev.X == next.X)
+            else if ((prev.Y - 1 + fieldHeight) % fieldHeight == next.Y && prev.X == next.X)
                 texture = Texture.HeadDown;
-            else if ((prev.Y + 1) % Program.fieldHeight == next.Y && prev.X == next.X)
+            else if ((prev.Y + 1) % fieldHeight == next.Y && prev.X == next.X)
                 texture = Texture.HeadUp;
             g.DrawImage(textures[texture], new Rectangle(point.X * 16, point.Y * 16, 16, 16));
             for (int i = 1; i < snake.Body.Length - 1; i++)
@@ -64,33 +68,27 @@ namespace SnakeGame
                     texture = Texture.BodyHorizontal;
                 else if (prev.X == next.X)
                     texture = Texture.BodyVertical;
-                else if ((prev.X == (next.X + 1) % Program.fieldWidth && 
-                    prev.Y == (next.Y - 1 + Program.fieldHeight) % Program.fieldHeight && point.X == prev.X) ||
-                    (prev.X == (next.X - 1 + Program.fieldWidth) % Program.fieldWidth && 
-                    prev.Y == (next.Y + 1) % Program.fieldHeight && point.Y == prev.Y))
+                else if ((prev.X == (next.X + 1) % fieldWidth && prev.Y == (next.Y - 1 + fieldHeight) % fieldHeight && point.X == prev.X) ||
+                    (prev.X == (next.X - 1 + fieldWidth) % fieldWidth && prev.Y == (next.Y + 1) % fieldHeight && point.Y == prev.Y))
                     texture = Texture.AngelUpLeft;
-                else if ((prev.X == (next.X + 1) % Program.fieldWidth && 
-                    prev.Y == (next.Y + 1) % Program.fieldHeight && point.Y == prev.Y) ||
-                        (prev.X == (next.X - 1 + Program.fieldWidth) % Program.fieldWidth && 
-                        prev.Y == (next.Y - 1 + Program.fieldHeight) % Program.fieldHeight && point.X == prev.X))
+                else if ((prev.X == (next.X + 1) % fieldWidth && prev.Y == (next.Y + 1) % fieldHeight && point.Y == prev.Y) ||
+                        (prev.X == (next.X - 1 + fieldWidth) % fieldWidth && prev.Y == (next.Y - 1 + fieldHeight) % fieldHeight && point.X == prev.X))
                     texture = Texture.AngelUpRight;
-                else if ((prev.X == (next.X - 1 + Program.fieldWidth) % Program.fieldWidth && 
-                    prev.Y == (next.Y - 1 + Program.fieldHeight) % Program.fieldHeight && point.Y == prev.Y) ||
-                    (prev.X == (next.X + 1) % Program.fieldWidth && 
-                    prev.Y == (next.Y + 1) % Program.fieldHeight && point.X == prev.X))
+                else if ((prev.X == (next.X - 1 + fieldWidth) % fieldWidth && prev.Y == (next.Y - 1 + fieldHeight) % fieldHeight && point.Y == prev.Y) ||
+                    (prev.X == (next.X + 1) % fieldWidth && prev.Y == (next.Y + 1) % fieldHeight && point.X == prev.X))
                     texture = Texture.AngelDownLeft;
                 else
                     texture = Texture.AngelDownRight;
                 g.DrawImage(textures[texture], new Rectangle(point.X * 16, point.Y * 16, 16, 16));
                 prev = point;
             }
-            if (prev.Y == next.Y && (prev.X - 1 + Program.fieldWidth) % Program.fieldWidth == next.X)
+            if (prev.Y == next.Y && (prev.X - 1 + fieldWidth) % fieldWidth == next.X)
                 texture = Texture.TailRight;
-            else if (prev.Y == next.Y && (prev.X + 1) % Program.fieldWidth == next.X)
+            else if (prev.Y == next.Y && (prev.X + 1) % fieldWidth == next.X)
                 texture = Texture.TailLeft;
-            else if ((prev.Y - 1 + Program.fieldHeight) % Program.fieldHeight == next.Y && prev.X == next.X)
+            else if ((prev.Y - 1 + fieldHeight) % fieldHeight == next.Y && prev.X == next.X)
                 texture = Texture.TailDown;
-            else if ((prev.Y + 1) % Program.fieldHeight == next.Y && prev.X == next.X)
+            else if ((prev.Y + 1) % fieldHeight == next.Y && prev.X == next.X)
                 texture = Texture.TailUp;
             g.DrawImage(textures[texture], new Rectangle(next.X * 16, next.Y * 16, 16, 16));
             return frame;
@@ -129,13 +127,13 @@ namespace SnakeGame
 
         private Bitmap GetField()
         {
-            var field = new Bitmap(Program.fieldWidth * 16, Program.fieldHeight * 16);
+            var field = new Bitmap(fieldWidth * 16, fieldHeight * 16);
             var g = Graphics.FromImage(field);
             var color = true;
             var color2 = false;
-            for (int j = 0; j < Program.fieldHeight; j++)
+            for (int j = 0; j < fieldHeight; j++)
             {
-                for (int i = 0; i < Program.fieldWidth; i++)
+                for (int i = 0; i < fieldWidth; i++)
                 {
                     if (color)
                         g.FillRectangle(StartForm.brush1, new Rectangle(16 * i, 16 * j, 16, 16));
@@ -155,8 +153,8 @@ namespace SnakeGame
             var g = Graphics.FromImage(frame);
             Brush brush1 = new SolidBrush(Color.FromArgb(41, 135, 72));
             g.FillRectangle(brush1, 0, 0, Width, Height);
-            var rectangleSize = Math.Min((Height - Height / 9 - Height / 9) / Program.fieldHeight, Width / Program.fieldWidth);
-            var x = (Width - rectangleSize * Program.fieldWidth) / 2;
+            var rectangleSize = Math.Min((Height - Height / 9 - Height / 9) / fieldHeight, Width / fieldWidth);
+            var x = (Width - rectangleSize * fieldWidth) / 2;
             var y = Height / 9;
             if (state == null)
             {
@@ -173,7 +171,7 @@ namespace SnakeGame
                 }
             }
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            g.DrawImage(pic, new Rectangle(x, y, rectangleSize * Program.fieldWidth, rectangleSize * Program.fieldHeight));
+            g.DrawImage(pic, new Rectangle(x, y, rectangleSize * fieldWidth, rectangleSize * fieldHeight));
             return frame;
         }
 
