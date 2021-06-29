@@ -40,6 +40,8 @@ namespace SnakeGame
         private Label endGame = new Label();
         private Label score1 = new Label();
         private Label score2 = new Label();
+        private Label score1count = new Label();
+        private Label score2count = new Label();
         private TextBox hostNameBox = new TextBox();
         private TextBox playerCountBox = new TextBox();
         private TextBox fieldSizeBox = new TextBox();
@@ -54,6 +56,12 @@ namespace SnakeGame
             var resFab = new Resources();
             score1.Image = resFab.CreateScoreTexture(Color.FromArgb(255, 167, 127), 10);
             score2.Image = resFab.CreateScoreTexture(Color.FromArgb(89, 94, 237), 10);
+            score1count.Font = new Font("impact", 60);
+            score2count.Font = new Font("impact", 60);
+            score1count.BackColor = Color.FromArgb(0, 100, 100, 100);
+            score2count.BackColor = Color.FromArgb(0, 100, 100, 100);
+            score1count.ForeColor = Color.FromArgb(255, 167, 127);
+            score2count.ForeColor = Color.FromArgb(89, 94, 237);
             score1.BackColor = Color.FromArgb(0, 100, 100, 100);
             score2.BackColor = Color.FromArgb(0, 100, 100, 100);
 
@@ -283,15 +291,19 @@ namespace SnakeGame
                 {
                     score2.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
                     score2.Location = new Point(Width / 4, Height / 2);
-                    g.DrawString((game.Snakes[0].Body.Length - 3).ToString(), new Font("impact", 60), new SolidBrush(Color.FromArgb(89, 94, 237)),
-                        Width / 4 + score1.Width, Height / 2);
+                    score2count.Size = new Size(Width / 8, 8 * (Width / 2) / 58);
+                    score2count.Location = new Point(5 * Width / 8, 8 * (Width / 2) / 58);
+                    score2count.Text = (game.Snakes[1].Body.Length - 3).ToString();
                     controls.Add(score2);
+                    controls.Add(score2count);
                 }
                 score1.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
                 score1.Location = new Point(Width / 4, 5 * Height / 16);
-                g.DrawString((game.Snakes[0].Body.Length - 3).ToString(), new Font("impact", 60), new SolidBrush(Color.FromArgb(255, 167, 127)),
-                        Width / 4 + score1.Width, 5 * Height / 16);
+                score1count.Size = new Size(Width / 8, 8 * (Width / 2) / 58);
+                score1count.Location = new Point(5 * Width/8, 5 * Height / 16);
+                score1count.Text = (game.Snakes[0].Body.Length - 3).ToString();
                 controls.Add(score1);
+                controls.Add(score1count);
                 prevHeightEnd = Height;
                 prevWidthEnd = Width;
             }
