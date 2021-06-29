@@ -13,7 +13,6 @@ namespace SnakeCore.Network
         Messaging messaging;
         Game game;
         int playerId;
-        public volatile bool GameUpdated = true;
         public volatile bool Active = true;
 
         public PlayerHandler(Messaging messaging, Game game, int playerId)
@@ -28,6 +27,11 @@ namespace SnakeCore.Network
             return "PlayerHandler";
         }
 
+        public void GameUpdated()
+        {
+            Active = messaging.Send(GameDto.Convert(game, playerId));
+        }
+
         public override void Run()
         {
             while(Active)
@@ -35,11 +39,6 @@ namespace SnakeCore.Network
                 if ( messaging.ReciveAll())
                 {
                     ProccessInput();
-                }
-                if (Active && GameUpdated)
-                {
-                    GameUpdated = false;
-                    Active = messaging.Send(GameDto.Convert(game, playerId));
                 }
             }
             messaging.Close();

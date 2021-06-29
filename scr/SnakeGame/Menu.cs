@@ -18,7 +18,6 @@ namespace SnakeGame
     class Menu
     {
         public WMPLib.WindowsMediaPlayer WMP = new WMPLib.WindowsMediaPlayer();
-        private GameClient client;
         private ControlCollection controls;
         bool connectMenu = false;
         bool hostMenu = false;
@@ -43,9 +42,8 @@ namespace SnakeGame
         private TextBox XBox = new TextBox();
         private Button play = new Button();
 
-        public Menu(Button host, Button connect, Label text, ControlCollection control, GameClient client)
+        public Menu(Button host, Button connect, Label text, ControlCollection control)
         {
-            this.client = client;
             controls = control;
             fieldX.Image = MultiplyTexture("Textures\\X.png", 10);
             fieldX.BackColor = Color.FromArgb(0, 100, 100, 100);
@@ -68,6 +66,10 @@ namespace SnakeGame
             fieldSizeLabel.Image = MultiplyTexture("Textures\\field.png", 10);
             fieldSizeLabel.BackColor = Color.FromArgb(0, 100, 100, 100);
 
+            playerCountBox.Text = "2";
+            YBox.Text = "10";
+            XBox.Text = "15";
+
             play.Image = MultiplyTexture("Textures\\play.png", 10);
             play.FlatStyle = FlatStyle.Flat;
             play.BackColor = Color.FromArgb(0, 100, 100, 100);
@@ -81,11 +83,11 @@ namespace SnakeGame
                 if (hostNameBox.Text != null && hostNameBox.Text != "" && int.TryParse(playerCountBox.Text, out count) &&
                 count > 0 && count < 4 && XBox.Text != null && int.TryParse(XBox.Text, out fieldX) &&
                 XBox.Text != null && int.TryParse(XBox.Text, out fieldX) && YBox.Text != null && int.TryParse(YBox.Text, out fieldY)
-                && fieldX < 100 && fieldY < 100 && fieldX > 9 && fieldY > 9)
+                && fieldX < 100 && fieldY < 100 && fieldX >= count * 5 && fieldY >= count * 5)
                 {
                     WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
                     WMP.controls.play();
-                    StartForm.client = GameClient.Host("Server", new Vector(fieldX, fieldY), count);
+                    StartForm.client = GameClient.Host(hostNameBox.Text, new Vector(fieldX, fieldY), count);
                     
                     //=================================================================================
                     StartForm.game.PrepareGame(count, fieldY, fieldX);
@@ -101,9 +103,11 @@ namespace SnakeGame
                     var ip = box.Text.Split(':')[0];
                     var port = int.Parse(box.Text.Split(':')[1]);
                     var address = new IPEndPoint(IPAddress.Parse(ip), port);
-                    StartForm.game.PrepareGame(2, 15, 20);
-                    StartForm.game.isStart = true;
                     StartForm.client = GameClient.Connect(address);
+                    if (StartForm.client == null)
+                        return;
+                    StartForm.game.PrepareGame(StartForm.client.PlayersCount, StartForm.client.MapSize.Y, StartForm.client.MapSize.X);
+                    StartForm.game.isStart = true;
                 }
             };
 
@@ -172,8 +176,10 @@ namespace SnakeGame
             {
                 if (prevHeightConnect != Height || prevWidthConnect != Width)
                 {
+                    controls.Clear();
+                    inviteButtons.Clear();
                     SetConnectControls(Height, Width);
-                    //SetConnectList(Height, Width);
+                    SetConnectList(Height, Width);
                     prevWidthConnect = Width;
                     prevHeightConnect = Height;
                 }
@@ -199,35 +205,20 @@ namespace SnakeGame
             return bigTexture;
         }
 
+        Dictionary<Button, InviteDto> inviteButtons = new Dictionary<Button, InviteDto>();
+
         private void SetConnectList(int Height, int Width)
         {
             var invites = LocalConnectionFinder.TryGetInvites();
             if (invites.Length == 0)
                 return;
             invitesButt = new Button[invites.Length];
-/*            var i1 = new InviteDto();
-            i1.HostName = "Play1";
-            var i2 = new InviteDto();
-            i2.HostName = "Play2";
-            var i3 = new InviteDto();
-            i3.HostName = "Play3";
-            var i4 = new InviteDto();
-            i4.HostName = "Play4";
-            var i5 = new InviteDto();
-            i5.HostName = "Play5";
-            var invites = new InviteDto[5];
-            invites[0] = i1;
-            invites[1] = i2;
-            invites[2] = i3;
-            invites[3] = i4;
-            invites[4] = i5;
-            invitesButt = new Button[invites.Length];*/
             var size = (4 * Height) / (8 * invites.Length);
             for (int i = 0; i < invites.Length; i++)
             {
                 var ip = new Button();
-                ip.Text = invites[i].Address;
-                ip.Font = new Font("impact", 40);
+                ip.Text = invites[i].HostName + "\n" + invites[i].Address + ":" + invites[i].Port;
+                ip.Font = new Font("impact", 30);
                 ip.Size = new Size(Width / 2, 8 * (Width / 2) / 58);
                 ip.FlatStyle = FlatStyle.Flat;
                 ip.BackColor = Color.FromArgb(0, 100, 100, 100);
@@ -239,15 +230,20 @@ namespace SnakeGame
                 {
                     WMP.URL = "Sounds\\AlIkAbIr_-_Square.wav";
                     WMP.controls.play();
-                    var address = new IPEndPoint(IPAddress.Parse(invites[0].Address), invites[0].Port);
+                    var invite = inviteButtons[(Button)s];
+                    var address = new IPEndPoint(IPAddress.Parse(invite.Address), invite.Port);
                     StartForm.client = GameClient.Connect(address);
+                    if (StartForm.client == null)
+                        return;
+                    StartForm.game.PrepareGame(StartForm.client.PlayersCount, StartForm.client.MapSize.Y, StartForm.client.MapSize.X);
+                    StartForm.game.isStart = true;
                 };
+                inviteButtons.Add(ip, invites[i]);
                 invitesButt[i] = ip;
             }
             for (int i = 0; i < invitesButt.Length; i++)
             {
                 controls.Add(invitesButt[i]);
-                //StartForm.game.isStart = true;
             }
         }
 

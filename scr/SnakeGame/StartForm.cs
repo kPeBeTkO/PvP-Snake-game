@@ -78,7 +78,7 @@ namespace SnakeGame
         {
             DoubleBuffered = true;
             GameClient.Updated += () => Invalidate();
-            var menu = new Menu(host, connect, text, Controls, client);
+            var menu = new Menu(host, connect, text, Controls);
             KeyDown += ChangeDirection;
             var timer = new Timer();
             /*timer.Interval = 50;

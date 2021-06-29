@@ -138,7 +138,7 @@ namespace SnakeCore.Logic
                     item = new Boots(pos);
                     break;
                 case 4:
-                    item = new Apple(pos);
+                    item = new Poison(pos);
                     break;
             }
             Items.Add(item);

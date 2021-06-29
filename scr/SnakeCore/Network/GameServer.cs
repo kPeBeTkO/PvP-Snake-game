@@ -51,7 +51,7 @@ namespace SnakeCore.Network
                     if (changed)
                         foreach(var handler in handlers)
                             if (handler.Active)
-                                handler.GameUpdated = true;
+                                handler.GameUpdated();
                             else
                                 Active = false;
                     if (game.State == GameState.Ended)

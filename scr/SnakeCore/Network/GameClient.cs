@@ -110,9 +110,14 @@ namespace SnakeCore.Network
         {
             if (GameState == null || GameState.State != Logic.GameState.Ended)
                 return Logic.GameState.Unknown;
-            var maxPoints = GameState.Snakes.Max(s => s.Body.Length);
-            if (GameState.Snakes[GameState.PlayerId].Body.Length == maxPoints)
-                return Logic.GameState.Victory;
+            if (GameState.Snakes.Length > 1)
+            {
+                var maxPoints = GameState.Snakes.Max(s => s.Body.Length);
+                if (GameState.Snakes[GameState.PlayerId].Body.Length == maxPoints)
+                    return Logic.GameState.Victory;
+            }
+            else if (GameState.Snakes[GameState.PlayerId].Body.Length == MapSize.X * MapSize.Y)
+                    return Logic.GameState.Victory;
             return Logic.GameState.Lose;
         }
 
